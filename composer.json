@@ -1,0 +1,25 @@
+{
+    "name": "nikolay-kalashnikov/php-project-lvl2",
+    "description": "Проект: Вычислитель отличий",
+    "bin": [
+        "bin/gendiff"
+    ],
+    "type": "project",
+    "authors": [
+        {
+            "name": "Nikolay Kalashnikov",
+            "email": "kalash-job@yandex.ru"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Php\\Package\\": "src",
+        }
+    },
+    "require": {
+        "docopt/docopt": "^1.0"
+    },
+    "require-dev": {
+        "squizlabs/php_codesniffer": "*"
+    }
+}
