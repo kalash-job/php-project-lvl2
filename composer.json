@@ -11,6 +11,9 @@
             "email": "kalash-job@yandex.ru"
         }
     ],
+    "scripts": {
+        "phpcs": "phpcs"
+    },
     "autoload": {
         "psr-4": {
             "Php\\Package\\": "src"
