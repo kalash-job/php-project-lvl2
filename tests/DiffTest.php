@@ -5,6 +5,7 @@ namespace Differ\Tests;
 use PHPUnit\Framework\TestCase;
 
 use function Differ\Diff\getDiff;
+use function Differ\Diff\genDiff;
 
 class DiffTest extends TestCase
 {
@@ -70,6 +71,24 @@ class DiffTest extends TestCase
             '+ result: false'
         ];
         $actual = getDiff($before, $after);
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testGenDiffWithAbsolutePaths()
+    {
+        $pathFirst = '/home/nikolay/php-project-lvl2/tests/before.json';
+        $pathSecond = '/home/nikolay/php-project-lvl2/tests/after.json';
+        $expected = "  host: hexlet.io\n+ timeout: 20\n- timeout: 50\n- proxy: 123.234.53.22\n+ verbose: true\n";
+        $actual = genDiff($pathFirst, $pathSecond);
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testGenDiffWithRelativePaths()
+    {
+        $pathFirst = 'tests/before.json';
+        $pathSecond = 'tests/after.json';
+        $expected = "  host: hexlet.io\n+ timeout: 20\n- timeout: 50\n- proxy: 123.234.53.22\n+ verbose: true\n";
+        $actual = genDiff($pathFirst, $pathSecond);
         $this->assertEquals($expected, $actual);
     }
 }
