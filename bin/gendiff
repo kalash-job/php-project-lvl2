@@ -1,6 +1,8 @@
 #!/usr/bin/env php
 <?php
 
+use function Differ\Diff\genDiff;
+
 $autoloadPath1 = __DIR__ . '/../../../autoload.php';
 $autoloadPath2 = __DIR__ . '/../vendor/autoload.php';
 if (file_exists($autoloadPath1)) {
@@ -24,3 +26,4 @@ Options:
 DOC;
 
 $args = Docopt::handle($doc);
+print_r(genDiff($args['<firstFile>'], $args['<secondFile>'], $args['--format']));
