@@ -62,20 +62,25 @@ function parseJson(string $jsonData)
             break;
     }
     if ($data_error !== '') {
-        print_r($data_error);
+        throw new \Exception("Error of JSON encoding: {$data_error}\n");
     }
     return $data;
 }
 
 function genDiff(string $pathFirst, string $pathSecond, $format = null)
 {
-    if (!file_exists($pathFirst)) {
-        return "You should write a correct path to the first file\n";
-    } elseif (!file_exists($pathSecond)) {
-        return "You should write a correct path to the second file\n";
+    try {
+        if (!file_exists($pathFirst)) {
+            throw new \Exception("File {$pathFirst} not found. You should write a correct path to the file\n");
+        } elseif (!file_exists($pathSecond)) {
+            throw new \Exception("File {$pathSecond} not found. You should write a correct path to the file\n");
+        }
+        $firstData = parseJson(file_get_contents($pathFirst));
+        $secondData = parseJson(file_get_contents($pathSecond));
+    } catch (\Exception $e) {
+        print_r($e->getMessage());
+        die();
     }
-    $firstData = parseJson(file_get_contents($pathFirst));
-    $secondData = parseJson(file_get_contents($pathSecond));
     $differences = implode("\n", getDiff($firstData, $secondData));
     return "{$differences}\n";
 }
