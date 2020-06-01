@@ -6,6 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 use function Differ\Diff\getDiff;
 use function Differ\Diff\genDiff;
+use function Differ\Diff\parseJson;
 
 class DiffTest extends TestCase
 {
@@ -76,8 +77,8 @@ class DiffTest extends TestCase
 
     public function testGenDiffWithAbsolutePaths()
     {
-        $pathFirst = '/home/nikolay/php-project-lvl2/tests/before.json';
-        $pathSecond = '/home/nikolay/php-project-lvl2/tests/after.json';
+        $pathFirst = '/home/nikolay/php-project-lvl2/tests/fixtures/before.json';
+        $pathSecond = '/home/nikolay/php-project-lvl2/tests/fixtures/after.json';
         $expected = "  host: hexlet.io\n+ timeout: 20\n- timeout: 50\n- proxy: 123.234.53.22\n+ verbose: true\n";
         $actual = genDiff($pathFirst, $pathSecond);
         $this->assertEquals($expected, $actual);
@@ -85,10 +86,25 @@ class DiffTest extends TestCase
 
     public function testGenDiffWithRelativePaths()
     {
-        $pathFirst = 'tests/before.json';
-        $pathSecond = 'tests/after.json';
+        $pathFirst = 'tests/fixtures/before.json';
+        $pathSecond = 'tests/fixtures/after.json';
         $expected = "  host: hexlet.io\n+ timeout: 20\n- timeout: 50\n- proxy: 123.234.53.22\n+ verbose: true\n";
         $actual = genDiff($pathFirst, $pathSecond);
         $this->assertEquals($expected, $actual);
+    }
+
+/*    public function testGenDiffsExceptions()
+    {
+        $pathFirst = 'tests/fixtures/befor.json';
+        $pathSecond = 'tests/fixtures/after.json';
+        $this->expectException(\Exception::class);
+        genDiff($pathFirst, $pathSecond);
+    }*/
+
+    public function testParseJsonsExceptions()
+    {
+        $path = 'tests/fixtures/wrong.json';
+        $this->expectException(\Exception::class);
+        parseJson(file_get_contents($path));
     }
 }
