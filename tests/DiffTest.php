@@ -6,7 +6,8 @@ use PHPUnit\Framework\TestCase;
 
 use function Differ\Diff\getDiff;
 use function Differ\Diff\genDiff;
-use function Differ\Diff\parseJson;
+use function Differ\Parsers\parseJson;
+use function Differ\Parsers\parseYml;
 
 class DiffTest extends TestCase
 {
