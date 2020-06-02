@@ -22,11 +22,13 @@
             "Php\\Package\\Tests\\": "tests"
         },
         "files": [
-            "src/Diff.php"
+            "src/Diff.php",
+            "src/Parsers.php"
         ]
     },
     "require": {
-        "docopt/docopt": "^1.0"
+        "docopt/docopt": "^1.0",
+        "symfony/yaml": "^5.1"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "*",
