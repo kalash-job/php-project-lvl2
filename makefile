@@ -8,7 +8,7 @@ lint-fix:
 	composer run-script phpcbf -- --standard=PSR12 bin src tests
 
 test:
-	composer run-script phpunit tests
+	composer phpunit tests
 
 test-coverage:
 	composer phpunit tests -- --coverage-clover build/logs/clover.xml
