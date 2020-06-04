@@ -46,8 +46,23 @@ function genDiff(string $pathFirst, string $pathSecond, $format = null)
         } elseif (!file_exists($pathSecond)) {
             throw new \Exception("File {$pathSecond} not found. You should write a correct path to the file\n");
         }
-        $firstData = parseJson(file_get_contents($pathFirst));
-        $secondData = parseJson(file_get_contents($pathSecond));
+        $extensionFirst = pathinfo($pathFirst, PATHINFO_EXTENSION);
+        $extensionSecond = pathinfo($pathSecond, PATHINFO_EXTENSION);
+        if ($extensionFirst !== 'json' && $extensionFirst !== 'yml') {
+            throw new \Exception("File {$pathFirst} must be in JSON or YAML format\n");
+        } elseif ($extensionSecond !== 'json' && $extensionSecond !== 'yml') {
+            throw new \Exception("File {$pathSecond} must be in JSON or YAML format\n");
+        }
+        if ($extensionFirst === 'json') {
+            $firstData = parseJson(file_get_contents($pathFirst));
+        } else {
+            $firstData = parseYaml(file_get_contents($pathFirst));
+        }
+        if ($extensionSecond === 'json') {
+            $secondData = parseJson(file_get_contents($pathSecond));
+        } else {
+            $secondData = parseYaml(file_get_contents($pathSecond));
+        }
     } catch (\Exception $e) {
         print_r($e->getMessage());
         die();
