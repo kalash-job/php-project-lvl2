@@ -74,14 +74,14 @@ class DiffTest extends TestCase
         $this->assertEquals($expected, $actual);
     }
 
-    public function testGenDiffWithAbsolutePaths()
+    /*public function testGenDiffWithAbsolutePaths()
     {
         $pathFirst = '/home/nikolay/php-project-lvl2/tests/fixtures/before.json';
         $pathSecond = '/home/nikolay/php-project-lvl2/tests/fixtures/after.json';
         $expected = "  host: hexlet.io\n+ timeout: 20\n- timeout: 50\n- proxy: 123.234.53.22\n+ verbose: true\n";
         $actual = genDiff($pathFirst, $pathSecond);
         $this->assertEquals($expected, $actual);
-    }
+    }*/
 
     public function testGenDiffWithRelativePaths()
     {
