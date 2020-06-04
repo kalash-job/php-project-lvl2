@@ -3,7 +3,7 @@
 namespace Differ\Diff;
 
 use function Differ\Parsers\parseJson;
-use function Differ\Parsers\parseYml;
+use function Differ\Parsers\parseYaml;
 
 function getDiff(array $before, array $after): array
 {

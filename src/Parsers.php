@@ -34,7 +34,7 @@ function parseJson(string $jsonData)
     return $data;
 }
 
-function parseYml(string $ymlData)
+function parseYaml(string $ymlData)
 {
     return $ymlData;
 }
