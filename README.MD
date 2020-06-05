@@ -10,6 +10,10 @@ How to install Difference Calculator with composer:
 
 [![asciicast](https://asciinema.org/a/Jq5wWC9kEGa4W0yz5H9NQQtIu.svg)](https://asciinema.org/a/Jq5wWC9kEGa4W0yz5H9NQQtIu)
 
-How to use Difference Calculator:
+How to use Difference Calculator with JSON-files:
 
 [![asciicast](https://asciinema.org/a/uLJaamrYPx56CybBzX4dCDuEm.svg)](https://asciinema.org/a/uLJaamrYPx56CybBzX4dCDuEm)
+
+How to use Difference Calculator with YAML-files:
+
+[![asciicast](https://asciinema.org/a/NzKb0jtUQs3cE2T6FEc7RAOQP.svg)](https://asciinema.org/a/NzKb0jtUQs3cE2T6FEc7RAOQP)
