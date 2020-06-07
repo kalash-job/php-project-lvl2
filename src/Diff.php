@@ -40,32 +40,27 @@ function getDiff(array $before, array $after): array
 
 function genDiff(string $pathFirst, string $pathSecond, $format = null)
 {
-    try {
-        if (!file_exists($pathFirst)) {
-            throw new \Exception("File {$pathFirst} not found. You should write a correct path to the file\n");
-        } elseif (!file_exists($pathSecond)) {
-            throw new \Exception("File {$pathSecond} not found. You should write a correct path to the file\n");
-        }
-        $extensionFirst = pathinfo($pathFirst, PATHINFO_EXTENSION);
-        $extensionSecond = pathinfo($pathSecond, PATHINFO_EXTENSION);
-        if ($extensionFirst !== 'json' && $extensionFirst !== 'yml') {
-            throw new \Exception("File {$pathFirst} must be in JSON or YAML format\n");
-        } elseif ($extensionSecond !== 'json' && $extensionSecond !== 'yml') {
-            throw new \Exception("File {$pathSecond} must be in JSON or YAML format\n");
-        }
-        if ($extensionFirst === 'json') {
-            $firstData = parseJson(file_get_contents($pathFirst));
-        } else {
-            $firstData = parseYaml(file_get_contents($pathFirst));
-        }
-        if ($extensionSecond === 'json') {
-            $secondData = parseJson(file_get_contents($pathSecond));
-        } else {
-            $secondData = parseYaml(file_get_contents($pathSecond));
-        }
-    } catch (\Exception $e) {
-        print_r($e->getMessage());
-        die();
+    if (!file_exists($pathFirst)) {
+        throw new \Exception("File {$pathFirst} not found. You should write a correct path to the file\n");
+    } elseif (!file_exists($pathSecond)) {
+        throw new \Exception("File {$pathSecond} not found. You should write a correct path to the file\n");
+    }
+    $extensionFirst = pathinfo($pathFirst, PATHINFO_EXTENSION);
+    $extensionSecond = pathinfo($pathSecond, PATHINFO_EXTENSION);
+    if ($extensionFirst !== 'json' && $extensionFirst !== 'yml') {
+        throw new \Exception("File {$pathFirst} must be in JSON or YAML format\n");
+    } elseif ($extensionSecond !== 'json' && $extensionSecond !== 'yml') {
+        throw new \Exception("File {$pathSecond} must be in JSON or YAML format\n");
+    }
+    if ($extensionFirst === 'json') {
+        $firstData = parseJson(file_get_contents($pathFirst));
+    } else {
+        $firstData = parseYaml(file_get_contents($pathFirst));
+    }
+    if ($extensionSecond === 'json') {
+        $secondData = parseJson(file_get_contents($pathSecond));
+    } else {
+        $secondData = parseYaml(file_get_contents($pathSecond));
     }
     $differences = implode("\n", getDiff($firstData, $secondData));
     return "{$differences}\n";

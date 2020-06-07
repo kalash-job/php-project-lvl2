@@ -9,14 +9,6 @@ use function Differ\Parsers\parseYaml;
 
 class ParsersTest extends TestCase
 {
-    /*    public function testGenDiffsExceptions()
-        {
-            $pathFirst = 'tests/fixtures/befor.json';
-            $pathSecond = 'tests/fixtures/after.json';
-            $this->expectException(\Exception::class);
-            genDiff($pathFirst, $pathSecond);
-        }*/
-
     public function testParseJsonsExceptions()
     {
         $path = 'tests/fixtures/wrong.json';

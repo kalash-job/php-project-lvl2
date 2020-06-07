@@ -109,4 +109,12 @@ class DiffTest extends TestCase
             ]
         ];
     }
+
+    public function testGenDiffsExceptions()
+    {
+        $pathFirst = 'tests/fixtures/befor.json';
+        $pathSecond = 'tests/fixtures/after.json';
+        $this->expectException(\Exception::class);
+        genDiff($pathFirst, $pathSecond);
+    }
 }
