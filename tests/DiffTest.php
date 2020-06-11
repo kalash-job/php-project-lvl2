@@ -85,32 +85,34 @@ class DiffTest extends TestCase
 
     public function pathsProvider()
     {
-        $expected = "  host: hexlet.io\n+ timeout: 20\n- timeout: 50\n- proxy: 123.234.53.22\n+ verbose: true\n";
-        $expectedFromFilesWithTrees = '{
-    common: {
-        setting1: Value 1
-      - setting2: 200
-        setting3: true
-      - setting6: {
-            key: value
-        }
-      + setting4: blah blah
-      + setting5: {
-            key5: value5
-        }
-    }
-    group1: {
-      + baz: bars
-      - baz: bas
-        foo: bar
-    }
-  - group2: {
-        abc: 12345
-    }
-  + group3: {
-        fee: 100500
-    }
-}';
+        $expected = "{\n  host: hexlet.io\n+ timeout: 20\n- timeout: 50\n- proxy: 123.234.53.22\n+ verbose: true\n}\n";
+        $expectedFromFilesWithTreesLines = [
+            "{",
+            "    common: {",
+            "        setting1: Value 1",
+            "      - setting2: 200",
+            "        setting3: true",
+            "      - setting6: {",
+            "            key: value",
+            "        }",
+            "      + setting4: blah blah",
+            "      + setting5: {",
+            "            key5: value5",
+            "        }",
+            "    }",
+            "    group1: {",
+            "      + baz: bars",
+            "      - baz: bas",
+            "        foo: bar",
+            "    }",
+            "  - group2: {",
+            "        abc: 12345",
+            "    }",
+            "  + group3: {",
+            "        fee: 100500",
+            "    }",
+            "}\n"];
+        $expectedFromFilesWithTrees = implode("\n", $expectedFromFilesWithTreesLines);
         return [
             [
                 $expected,
