@@ -6,6 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 use function Differ\Diff\getDiff;
 use function Differ\Diff\genDiff;
+use function Differ\Diff\renderDiff;
 
 class DiffTest extends TestCase
 {
@@ -21,12 +22,13 @@ class DiffTest extends TestCase
             'verbose' => true,
             'host' => 'hexlet.io'
         ];
+
         $expected = [
-            '  host: hexlet.io',
-            '+ timeout: 20',
-            '- timeout: 50',
-            '- proxy: 123.234.53.22',
-            '+ verbose: true'
+            ['key' => 'host', 'value' => 'hexlet.io', 'type' => 'former'],
+            ['key' => 'timeout', 'value' => 20, 'type' => 'renewed'],
+            ['key' => 'timeout', 'value' => 50, 'type' => 'removed'],
+            ['key' => 'proxy', 'value' => '123.234.53.22', 'type' => 'removed'],
+            ['key' => 'verbose', 'value' => 'true', 'type' => 'added']
         ];
         $actual = getDiff($before, $after);
         $this->assertEquals($expected, $actual);
@@ -41,10 +43,11 @@ class DiffTest extends TestCase
         ];
         $after = [];
         $expected = [
-            '- host: hexlet.io',
-            '- timeout: 50',
-            '- proxy: 123.234.53.22'
+            ['key' => 'host', 'value' => 'hexlet.io', 'type' => 'removed'],
+            ['key' => 'timeout', 'value' => 50, 'type' => 'removed'],
+            ['key' => 'proxy', 'value' => '123.234.53.22', 'type' => 'removed']
         ];
+
         $actual = getDiff($before, $after);
         $this->assertEquals($expected, $actual);
     }
@@ -63,14 +66,35 @@ class DiffTest extends TestCase
             'result' => false
         ];
         $expected = [
-            '  host: hexlet.io',
-            '+ timeout: 0',
-            '- timeout: 50',
-            '- proxy: 123.234.53.22',
-            '+ verbose: true',
-            '+ result: false'
+            ['key' => 'host', 'value' => 'hexlet.io', 'type' => 'former'],
+            ['key' => 'timeout', 'value' => 0, 'type' => 'renewed'],
+            ['key' => 'timeout', 'value' => 50, 'type' => 'removed'],
+            ['key' => 'proxy', 'value' => '123.234.53.22', 'type' => 'removed'],
+            ['key' => 'verbose', 'value' => 'true', 'type' => 'added'],
+            ['key' => 'result', 'value' => 'false', 'type' => 'added']
         ];
         $actual = getDiff($before, $after);
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testRenderDiff()
+    {
+        $ast = [
+            ['key' => 'host', 'value' => 'hexlet.io', 'type' => 'former'],
+            ['key' => 'timeout', 'value' => 20, 'type' => 'renewed'],
+            ['key' => 'timeout', 'value' => 50, 'type' => 'removed'],
+            ['key' => 'proxy', 'value' => '123.234.53.22', 'type' => 'removed'],
+            ['key' => 'verbose', 'value' => 'true', 'type' => 'added']
+        ];
+        $expected = implode("\n", [
+            "{",
+            '    host: hexlet.io',
+            '  + timeout: 20',
+            '  - timeout: 50',
+            '  - proxy: 123.234.53.22',
+            '  + verbose: true',
+            "}\n"]);
+        $actual = renderDiff($ast);
         $this->assertEquals($expected, $actual);
     }
 
@@ -85,7 +109,7 @@ class DiffTest extends TestCase
 
     public function pathsProvider()
     {
-        $expected = "{\n  host: hexlet.io\n+ timeout: 20\n- timeout: 50\n- proxy: 123.234.53.22\n+ verbose: true\n}\n";
+        $expected = "{\n    host: hexlet.io\n  + timeout: 20\n  - timeout: 50\n  - proxy: 123.234.53.22\n  + verbose: true\n}\n";
         $expectedFromFilesWithTreesLines = [
             "{",
             "    common: {",
