@@ -60,7 +60,7 @@ function getDiff($before, $after): array
         // получаем ключи верхнего уровня для последующего сравнения
         $keys = array_keys(array_merge($firstColl, $secondColl));
         // запускаем обход array_reduce по массиву с ключами, в acc собираем элементы с внутренним состоянием
-        $diff = array_reduce($keys, function ($acc, $key) use ($nodeBefore, $nodeAfter, $firstColl, $secondColl, &$iter) {
+        $diff = array_reduce($keys, function ($acc, $key) use ($firstColl, $secondColl, &$iter) {
 
             $nodeFirst = isset($firstColl[$key]) ? correctValue($firstColl[$key]) : null;
             $nodeSecond = isset($secondColl[$key]) ? correctValue($secondColl[$key]) : null;
