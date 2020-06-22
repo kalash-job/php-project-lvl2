@@ -6,7 +6,7 @@ use Symfony\Component\Yaml\Yaml;
 
 function parseJson(string $jsonData)
 {
-    $data = json_decode($jsonData, true);
+    $data = json_decode($jsonData);
     switch (json_last_error()) {
         case JSON_ERROR_NONE:
             $data_error  = '';
