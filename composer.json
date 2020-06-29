@@ -23,7 +23,9 @@
         },
         "files": [
             "src/Diff.php",
-            "src/Parsers.php"
+            "src/Parsers.php",
+            "src/Formatters/Pretty.php",
+            "src/Formatters/Plain.php"
         ]
     },
     "require": {

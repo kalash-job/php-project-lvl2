@@ -4,39 +4,8 @@ namespace Differ\Diff;
 
 use function Differ\Parsers\parseJson;
 use function Differ\Parsers\parseYaml;
-
-/*function getDiff(array $before, array $after): array
-{
-    $keys = array_keys(array_merge($before, $after));
-    return array_reduce($keys, function ($acc, $key) use ($before, $after) {
-        $prefixMinus = '- ';
-        $prefixPlus = '+ ';
-        $prefixSpace = '  ';
-        correctValue = function ($value) {
-            if ($value === true) {
-                return 'true';
-            } elseif ($value === false) {
-                return 'false';
-            } else {
-                return $value;
-            }
-        };
-        if (isset($before[$key]) && isset($after[$key])) {
-            if ($before[$key] === $after[$key]) {
-                $acc[] = "$prefixSpace{$key}: {$before[$key]}";
-                return $acc;
-            }
-            $acc[] = "{$prefixPlus}{$key}: {correctValue($after[$key])}";
-            $acc[] = "{$prefixMinus}{$key}: {correctValue($before[$key])}";
-            return $acc;
-        } elseif (isset($before[$key])) {
-            $acc[] = "{$prefixMinus}{$key}: {correctValue($before[$key])}";
-            return $acc;
-        }
-        $acc[] = "{$prefixPlus}{$key}: {correctValue($after[$key])}";
-        return $acc;
-    }, []);
-}*/
+use function Differ\Plain\renderPlainDiff;
+use function Differ\Pretty\renderDiff;
 
 function correctValue($value)
 {
@@ -49,19 +18,13 @@ function correctValue($value)
     }
 }
 
-// Функция получает отпарсенные объекты/массивы и возвращает массив с различиями, передаваемый в рендеринг
 function getDiff($before, $after): array
 {
-    // анонимная функция
     $iter = function ($nodeBefore, $nodeAfter, $diff) use (&$iter) {
-        // избавляемся от объектов на верхнем уровне сравниваемых объектов
         $firstColl = (array)$nodeBefore;
         $secondColl = (array)$nodeAfter;
-        // получаем ключи верхнего уровня для последующего сравнения
         $keys = array_keys(array_merge($firstColl, $secondColl));
-        // запускаем обход array_reduce по массиву с ключами, в acc собираем элементы с внутренним состоянием
         $diff = array_reduce($keys, function ($acc, $key) use ($firstColl, $secondColl, &$iter) {
-
             $nodeFirst = isset($firstColl[$key]) ? correctValue($firstColl[$key]) : null;
             $nodeSecond = isset($secondColl[$key]) ? correctValue($secondColl[$key]) : null;
             if (!isset($nodeFirst)) {
@@ -95,75 +58,16 @@ function getDiff($before, $after): array
     return $result;
 }
 
-function getPrefix($node): string
+function chooseOutputsFormat($differences, $format)
 {
-    $prefixMinus = '  - ';
-    $prefixPlus = '  + ';
-    $prefixSpaces = '    ';
-    if (!isset($node['type'])) {
-        return $prefixSpaces;
-    }
-    if ($node['type'] === 'former') {
-        return $prefixSpaces;
-    } elseif ($node['type'] === 'added' || $node['type'] === 'renewed') {
-        return $prefixPlus;
-    } else {
-        return $prefixMinus;
+    if ($format === 'pretty') {
+        return renderDiff($differences);
+    } elseif ($format === 'plain') {
+        return renderPlainDiff($differences);
     }
 }
 
-function formatObject(object $node): array
-{
-    $nodeAsColl = (array)$node;
-    $keys = array_keys($nodeAsColl);
-    return array_reduce($keys, function ($acc, $key) use ($nodeAsColl) {
-        if (is_object($nodeAsColl[$key])) {
-            $value = formatObject($nodeAsColl[$key]);
-        } else {
-            $value = $nodeAsColl[$key];
-        }
-        $acc[] = ['key' => $key, 'value' => $value];
-        return $acc;
-    }, []);
-}
-
-function renderDiff(array $diff): string
-{
-    $lines = ["{"];
-    $iter = function ($depth, $node) use (&$lines, &$iter) {
-        $openingBracket = ': {';
-        $closingBracket = '    }';
-        if (isset($node['children'])) {
-            $offset = str_repeat('    ', $depth);
-            $lines[] = "{$offset}{$node['key']}{$openingBracket}";
-            array_reduce($node['children'], $iter, $depth + 1);
-            $lines[] = "{$offset}}";
-            return $depth;
-        }
-        if (isset($node['value']) && is_object($node['value'])) {
-            $offset = str_repeat('    ', $depth - 1);
-            $prefix = getPrefix($node);
-            $lines[] = "{$offset}{$prefix}{$node['key']}{$openingBracket}";
-            $value = formatObject($node['value']);
-            array_reduce($value, $iter, $depth + 1);
-            $lines[] = "{$offset}{$closingBracket}";
-            return $depth;
-        }
-        if (isset($node['value'])) {
-            $offset = str_repeat('    ', $depth - 1);
-            $prefix = getPrefix($node);
-            $lines[] = "{$offset}{$prefix}{$node['key']}: {$node['value']}";
-            return $depth;
-        }
-    };
-    $startDepth = 1;
-    array_reduce($diff, $iter, $startDepth);
-    $lines[] = "}\n";
-    return implode("\n", $lines);
-}
-
-
-function genDiff(string $pathFirst, string $pathSecond, $format = null)
+function genDiff(string $pathFirst, string $pathSecond, $format)
 {
     if (!file_exists($pathFirst)) {
         throw new \Exception("File {$pathFirst} not found. You should write a correct path to the file\n");
@@ -188,5 +92,5 @@ function genDiff(string $pathFirst, string $pathSecond, $format = null)
         $secondData = parseYaml(file_get_contents($pathSecond));
     }
     $differences = getDiff($firstData, $secondData);
-    return renderDiff($differences);
+    return chooseOutputsFormat($differences, $format);
 }

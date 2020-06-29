@@ -6,8 +6,6 @@ use PHPUnit\Framework\TestCase;
 
 use function Differ\Diff\getDiff;
 use function Differ\Diff\genDiff;
-use function Differ\Diff\renderDiff;
-use function Differ\Diff\renderPlainDiff;
 
 class DiffTest extends TestCase
 {
@@ -75,46 +73,6 @@ class DiffTest extends TestCase
             ['key' => 'result', 'value' => 'false', 'type' => 'added']
         ];
         $actual = getDiff($before, $after);
-        $this->assertEquals($expected, $actual);
-    }
-
-    public function testRenderDiff()
-    {
-        $ast = [
-            ['key' => 'host', 'value' => 'hexlet.io', 'type' => 'former'],
-            ['key' => 'timeout', 'value' => 20, 'type' => 'renewed'],
-            ['key' => 'timeout', 'value' => 50, 'type' => 'removed'],
-            ['key' => 'proxy', 'value' => '123.234.53.22', 'type' => 'removed'],
-            ['key' => 'verbose', 'value' => 'true', 'type' => 'added']
-        ];
-        $expected = implode("\n", [
-            "{",
-            '    host: hexlet.io',
-            '  + timeout: 20',
-            '  - timeout: 50',
-            '  - proxy: 123.234.53.22',
-            '  + verbose: true',
-            "}\n"]);
-        $actual = renderDiff($ast);
-        $this->assertEquals($expected, $actual);
-    }
-
-    public function testRenderPlainDiff()
-    {
-        $ast = [
-            ['key' => 'host', 'value' => 'hexlet.io', 'type' => 'former'],
-            ['key' => 'timeout', 'value' => 20, 'type' => 'renewed'],
-            ['key' => 'timeout', 'value' => 50, 'type' => 'removed'],
-            ['key' => 'proxy', 'value' => '123.234.53.22', 'type' => 'removed'],
-            ['key' => 'verbose', 'value' => 'true', 'type' => 'added']
-        ];
-        $expected = implode("\n", [
-            "Property 'timeout' was changed. From '50' to '20'",
-            "Property 'proxy' was removed",
-            "Property 'verbose' was added with value: 'true'\n"
-            ]);
-
-        $actual = renderPlainDiff($ast);
         $this->assertEquals($expected, $actual);
     }
 
