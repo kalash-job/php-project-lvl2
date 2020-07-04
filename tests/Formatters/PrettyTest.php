@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 use function Differ\Pretty\renderDiff;
 
-class DiffTest extends TestCase
+class PrettyTest extends TestCase
 {
     public function testRenderDiff()
     {

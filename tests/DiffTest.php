@@ -141,6 +141,33 @@ class DiffTest extends TestCase
             ];
         $expectedPlainFromFilesWithTrees = implode("\n", $expectedPlainFromFilesWithTreesLines);
 
+        $expectedJson = implode("", [
+            "{",
+            '"host":"hexlet.io",',
+            '"timeout":[',
+            '{',
+            '"type":"renewed",',
+            '"newValue":20,',
+            '"oldValue":50',
+            '}',
+            '],',
+            '"proxy":[',
+            '{',
+            '"type":"removed",',
+            '"removingValue":"123.234.53.22"',
+            '}',
+            '],',
+            '"verbose":[',
+            '{',
+            '"type":"added",',
+            '"addingValue":"true"',
+            '}',
+            ']',
+            "}\n"]);
+
+        $json = file_get_contents('tests/fixtures/result.json');
+        $expectedJsonFromFilesWithTrees = "{$json}\n";
+
         return [
             [
                 $expected,
@@ -201,6 +228,18 @@ class DiffTest extends TestCase
                 'tests/fixtures/before_with_tree.json',
                 'tests/fixtures/after_with_tree.json',
                 'plain'
+            ],
+            [
+                $expectedJson,
+                'tests/fixtures/before.json',
+                'tests/fixtures/after.json',
+                'json'
+            ],
+            [
+                $expectedJsonFromFilesWithTrees,
+                'tests/fixtures/before_with_tree.json',
+                'tests/fixtures/after_with_tree.json',
+                'json'
             ]
         ];
     }
