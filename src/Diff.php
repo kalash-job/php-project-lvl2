@@ -8,17 +8,6 @@ use function Differ\Plain\renderPlainDiff;
 use function Differ\Pretty\renderDiff;
 use function Differ\Json\renderJsonDiff;
 
-function correctValue($value)
-{
-    if ($value === true) {
-        return 'true';
-    } elseif ($value === false) {
-        return 'false';
-    } else {
-        return $value;
-    }
-}
-
 function getDiff($before, $after): array
 {
     $iter = function ($nodeBefore, $nodeAfter, $diff) use (&$iter) {
@@ -26,8 +15,8 @@ function getDiff($before, $after): array
         $secondColl = (array)$nodeAfter;
         $keys = array_keys(array_merge($firstColl, $secondColl));
         $diff = array_reduce($keys, function ($acc, $key) use ($firstColl, $secondColl, &$iter) {
-            $nodeFirst = isset($firstColl[$key]) ? correctValue($firstColl[$key]) : null;
-            $nodeSecond = isset($secondColl[$key]) ? correctValue($secondColl[$key]) : null;
+            $nodeFirst = isset($firstColl[$key]) ? ($firstColl[$key]) : null;
+            $nodeSecond = isset($secondColl[$key]) ? ($secondColl[$key]) : null;
             if (!isset($nodeFirst)) {
                 $acc[] = ['key' => $key, 'value' => $nodeSecond, 'type' => 'added'];
                 return $acc;
@@ -59,7 +48,7 @@ function getDiff($before, $after): array
     return $result;
 }
 
-function chooseOutputsFormat($differences, $format)
+function chooseOutputsFormat($differences, string $format)
 {
     if ($format === 'pretty') {
         return renderDiff($differences);
@@ -70,7 +59,7 @@ function chooseOutputsFormat($differences, $format)
     }
 }
 
-function genDiff(string $pathFirst, string $pathSecond, $format)
+function genDiff(string $pathFirst, string $pathSecond, string $format)
 {
     if (!file_exists($pathFirst)) {
         throw new \Exception("File {$pathFirst} not found. You should write a correct path to the file\n");

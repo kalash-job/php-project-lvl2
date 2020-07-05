@@ -59,7 +59,14 @@ function renderDiff(array $diff): string
         if (isset($node['value'])) {
             $offset = str_repeat('    ', $depth - 1);
             $prefix = getPrefix($node);
-            $lines[] = "{$offset}{$prefix}{$node['key']}: {$node['value']}";
+            if ($node['value'] === true) {
+                $value = 'true';
+            } elseif ($node['value'] === false) {
+                $value = 'false';
+            } else {
+                $value = $node['value'];
+            }
+            $lines[] = "{$offset}{$prefix}{$node['key']}: {$value}";
             return $depth;
         }
     };

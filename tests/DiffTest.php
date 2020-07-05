@@ -27,7 +27,7 @@ class DiffTest extends TestCase
             ['key' => 'timeout', 'value' => 20, 'type' => 'renewed'],
             ['key' => 'timeout', 'value' => 50, 'type' => 'removed'],
             ['key' => 'proxy', 'value' => '123.234.53.22', 'type' => 'removed'],
-            ['key' => 'verbose', 'value' => 'true', 'type' => 'added']
+            ['key' => 'verbose', 'value' => true, 'type' => 'added']
         ];
         $actual = getDiff($before, $after);
         $this->assertEquals($expected, $actual);
@@ -69,8 +69,8 @@ class DiffTest extends TestCase
             ['key' => 'timeout', 'value' => 0, 'type' => 'renewed'],
             ['key' => 'timeout', 'value' => 50, 'type' => 'removed'],
             ['key' => 'proxy', 'value' => '123.234.53.22', 'type' => 'removed'],
-            ['key' => 'verbose', 'value' => 'true', 'type' => 'added'],
-            ['key' => 'result', 'value' => 'false', 'type' => 'added']
+            ['key' => 'verbose', 'value' => true, 'type' => 'added'],
+            ['key' => 'result', 'value' => false, 'type' => 'added']
         ];
         $actual = getDiff($before, $after);
         $this->assertEquals($expected, $actual);
@@ -97,9 +97,9 @@ class DiffTest extends TestCase
             "}\n"]);
 
         $expectedPlain = implode("\n", [
-            "Property 'timeout' was changed. From '50' to '20'",
+            "Property 'timeout' was changed. From 50 to 20",
             "Property 'proxy' was removed",
-            "Property 'verbose' was added with value: 'true'\n"
+            "Property 'verbose' was added with value: true\n"
             ]);
 
         $expectedFromFilesWithTreesLines = [
@@ -160,7 +160,7 @@ class DiffTest extends TestCase
             '"verbose":[',
             '{',
             '"type":"added",',
-            '"addingValue":"true"',
+            '"addingValue":true',
             '}',
             ']',
             "}\n"]);

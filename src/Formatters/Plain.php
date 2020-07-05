@@ -2,6 +2,20 @@
 
 namespace Differ\Plain;
 
+function correctValue($value)
+{
+    if ($value === true) {
+        return 'true';
+    } elseif ($value === false) {
+        return 'false';
+    } elseif (is_object($value)) {
+        return "'complex value'";
+    } elseif (is_string($value)) {
+        return "'{$value}'";
+    }
+    return $value;
+}
+
 function renderPlainDiff(array $diff): string
 {
     $lines = [];
@@ -12,16 +26,13 @@ function renderPlainDiff(array $diff): string
             array_reduce($node['children'], $iter, $newPath);
             return $path;
         }
+        $value = correctValue($node['value']);
         if ($node['type'] === 'added') {
-            if (isset($node['value']) && is_object($node['value'])) {
-                $lines[] = "Property '{$path}{$node['key']}' was added with value: 'complex value'";
-                return $path;
-            }
-            $lines[] = "Property '{$path}{$node['key']}' was added with value: '{$node['value']}'";
+            $lines[] = "Property '{$path}{$node['key']}' was added with value: {$value}";
             return $path;
         }
         if ($node['type'] === 'renewed') {
-            $newValue = is_object($node['value']) ? 'complex value' : $node['value'];
+            $newValue = $value;
             return $path;
         }
         if ($node['type'] === 'removed') {
@@ -29,7 +40,7 @@ function renderPlainDiff(array $diff): string
                 $lines[] = "Property '{$path}{$node['key']}' was removed";
                 return $path;
             }
-            $lines[] = "Property '{$path}{$node['key']}' was changed. From '{$node['value']}' to '{$newValue}'";
+            $lines[] = "Property '{$path}{$node['key']}' was changed. From {$value} to {$newValue}";
             $newValue = null;
             return $path;
         }
