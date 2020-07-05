@@ -6,6 +6,7 @@ use function Differ\Parsers\parseJson;
 use function Differ\Parsers\parseYaml;
 use function Differ\Plain\renderPlainDiff;
 use function Differ\Pretty\renderDiff;
+use function Differ\Json\renderJsonDiff;
 
 function correctValue($value)
 {
@@ -64,6 +65,8 @@ function chooseOutputsFormat($differences, $format)
         return renderDiff($differences);
     } elseif ($format === 'plain') {
         return renderPlainDiff($differences);
+    } elseif ($format === 'json') {
+        return renderJsonDiff($differences);
     }
 }
 

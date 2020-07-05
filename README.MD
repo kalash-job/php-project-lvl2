@@ -21,3 +21,7 @@ How to use Difference Calculator with YAML-files:
 How to use Difference Calculator with JSON-files and YAML-files in plain format:
 
 [![asciicast](https://asciinema.org/a/izwaEzyAcB02PbFGmGmS6v3ya.svg)](https://asciinema.org/a/izwaEzyAcB02PbFGmGmS6v3ya)
+
+How to use Difference Calculator with JSON-files and YAML-files in json format:
+
+[![asciicast](https://asciinema.org/a/MkzEayO0ylQNkJVZsQgSI6X9L.svg)](https://asciinema.org/a/MkzEayO0ylQNkJVZsQgSI6X9L)
