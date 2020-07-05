@@ -5,6 +5,7 @@ namespace Differ\Plain;
 function renderPlainDiff(array $diff): string
 {
     $lines = [];
+    $newValue = null;
     $iter = function ($path, $node) use (&$lines, &$iter, &$newValue) {
         if (isset($node['children'])) {
             $newPath = "{$path}{$node['key']}.";
