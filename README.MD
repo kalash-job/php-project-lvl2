@@ -12,16 +12,20 @@ How to install Difference Calculator with composer:
 
 How to use Difference Calculator with JSON-files:
 
-[![asciicast](https://asciinema.org/a/sk2b5haWj6Elek86ltkpGtZ1O.svg)](https://asciinema.org/a/sk2b5haWj6Elek86ltkpGtZ1O)
+[![asciicast](https://asciinema.org/a/cMhnFYt7m0wUrq5MMhfmWTCSC.svg)](https://asciinema.org/a/cMhnFYt7m0wUrq5MMhfmWTCSC)
 
 How to use Difference Calculator with YAML-files:
 
-[![asciicast](https://asciinema.org/a/NzKb0jtUQs3cE2T6FEc7RAOQP.svg)](https://asciinema.org/a/NzKb0jtUQs3cE2T6FEc7RAOQP)
+[![asciicast](https://asciinema.org/a/p5OuQsfzG9q7oZlbYsyqmp4eO.svg)](https://asciinema.org/a/p5OuQsfzG9q7oZlbYsyqmp4eO)
+
+How to use Difference Calculator with JSON-files with recursive structure:
+
+[![asciicast](https://asciinema.org/a/KCrNG1glfJoxsou58NRV8rtS4.svg)](https://asciinema.org/a/KCrNG1glfJoxsou58NRV8rtS4)
 
 How to use Difference Calculator with JSON-files and YAML-files in plain format:
 
-[![asciicast](https://asciinema.org/a/izwaEzyAcB02PbFGmGmS6v3ya.svg)](https://asciinema.org/a/izwaEzyAcB02PbFGmGmS6v3ya)
+[![asciicast](https://asciinema.org/a/GVUaQhzZnvEshr7mmNRNFU88R.svg)](https://asciinema.org/a/GVUaQhzZnvEshr7mmNRNFU88R)
 
 How to use Difference Calculator with JSON-files and YAML-files in json format:
 
-[![asciicast](https://asciinema.org/a/MkzEayO0ylQNkJVZsQgSI6X9L.svg)](https://asciinema.org/a/MkzEayO0ylQNkJVZsQgSI6X9L)
+[![asciicast](https://asciinema.org/a/tB5TeKY9J9M01czWBGN1fbqnY.svg)](https://asciinema.org/a/tB5TeKY9J9M01czWBGN1fbqnY)
