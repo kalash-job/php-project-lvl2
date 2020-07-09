@@ -4,78 +4,10 @@ namespace Differ\Tests;
 
 use PHPUnit\Framework\TestCase;
 
-use function Differ\Diff\getDiff;
 use function Differ\Diff\genDiff;
 
 class DiffTest extends TestCase
 {
-    public function testGetDiff()
-    {
-        $before = [
-            'host' => 'hexlet.io',
-            'timeout' => 50,
-            'proxy' => '123.234.53.22'
-        ];
-        $after = [
-            'timeout' => 20,
-            'verbose' => true,
-            'host' => 'hexlet.io'
-        ];
-
-        $expected = [
-            ['key' => 'host', 'value' => 'hexlet.io', 'type' => 'former'],
-            ['key' => 'timeout', 'value' => 20, 'type' => 'renewed'],
-            ['key' => 'timeout', 'value' => 50, 'type' => 'removed'],
-            ['key' => 'proxy', 'value' => '123.234.53.22', 'type' => 'removed'],
-            ['key' => 'verbose', 'value' => true, 'type' => 'added']
-        ];
-        $actual = getDiff($before, $after);
-        $this->assertEquals($expected, $actual);
-    }
-
-    public function testGetDiffWithEmptyValue()
-    {
-        $before = [
-            'host' => 'hexlet.io',
-            'timeout' => 50,
-            'proxy' => '123.234.53.22'
-        ];
-        $after = [];
-        $expected = [
-            ['key' => 'host', 'value' => 'hexlet.io', 'type' => 'removed'],
-            ['key' => 'timeout', 'value' => 50, 'type' => 'removed'],
-            ['key' => 'proxy', 'value' => '123.234.53.22', 'type' => 'removed']
-        ];
-
-        $actual = getDiff($before, $after);
-        $this->assertEquals($expected, $actual);
-    }
-
-    public function testGetDiffWithBooleanValue()
-    {
-        $before = [
-            'host' => 'hexlet.io',
-            'timeout' => 50,
-            'proxy' => '123.234.53.22'
-        ];
-        $after = [
-            'timeout' => 0,
-            'verbose' => true,
-            'host' => 'hexlet.io',
-            'result' => false
-        ];
-        $expected = [
-            ['key' => 'host', 'value' => 'hexlet.io', 'type' => 'former'],
-            ['key' => 'timeout', 'value' => 0, 'type' => 'renewed'],
-            ['key' => 'timeout', 'value' => 50, 'type' => 'removed'],
-            ['key' => 'proxy', 'value' => '123.234.53.22', 'type' => 'removed'],
-            ['key' => 'verbose', 'value' => true, 'type' => 'added'],
-            ['key' => 'result', 'value' => false, 'type' => 'added']
-        ];
-        $actual = getDiff($before, $after);
-        $this->assertEquals($expected, $actual);
-    }
-
     /**
      * @dataProvider pathsProvider
      */
@@ -96,11 +28,18 @@ class DiffTest extends TestCase
             '  + verbose: true',
             "}\n"]);
 
-        $expectedPlain = implode("\n", [
+        $expectedAfterEmptyJson = implode("\n", [
+            "{",
+            '  - host: hexlet.io',
+            '  - timeout: 50',
+            '  - proxy: 123.234.53.22',
+            "}\n"]);
+
+        $expectedInPlainFormat = implode("\n", [
             "Property 'timeout' was changed. From 50 to 20",
             "Property 'proxy' was removed",
             "Property 'verbose' was added with value: true\n"
-            ]);
+        ]);
 
         $expectedFromFilesWithTreesLines = [
             "{",
@@ -138,10 +77,10 @@ class DiffTest extends TestCase
             "Property 'group1.baz' was changed. From 'bas' to 'bars'",
             "Property 'group2' was removed",
             "Property 'group3' was added with value: 'complex value'\n",
-            ];
-        $expectedPlainFromFilesWithTrees = implode("\n", $expectedPlainFromFilesWithTreesLines);
+        ];
+        $expectedInPlainFormatFromFilesWithTrees = implode("\n", $expectedPlainFromFilesWithTreesLines);
 
-        $expectedJson = implode("", [
+        $expectedInJsonFormat = implode("", [
             "{",
             '"host":"hexlet.io",',
             '"timeout":[',
@@ -166,7 +105,7 @@ class DiffTest extends TestCase
             "}\n"]);
 
         $json = file_get_contents('tests/fixtures/result.json');
-        $expectedJsonFromFilesWithTrees = "{$json}\n";
+        $expectedInJsonFormatFromFilesWithTrees = "{$json}\n";
 
         return [
             [
@@ -183,14 +122,14 @@ class DiffTest extends TestCase
             ],
             [
                 $expected,
-                __DIR__ . '/fixtures/before.yml',
-                __DIR__ . '/fixtures/after.yml',
+                'tests/fixtures/before.yml',
+                'tests/fixtures/after.yml',
                 'pretty'
             ],
             [
-                $expected,
-                'tests/fixtures/before.yml',
-                'tests/fixtures/after.yml',
+                $expectedAfterEmptyJson,
+                'tests/fixtures/before.json',
+                'tests/fixtures/empty.json',
                 'pretty'
             ],
             [
@@ -200,43 +139,31 @@ class DiffTest extends TestCase
                 'pretty'
             ],
             [
-                $expectedPlain,
-                __DIR__ . '/fixtures/before.json',
-                __DIR__ . '/fixtures/after.json',
-                'plain'
-            ],
-            [
-                $expectedPlain,
+                $expectedInPlainFormat,
                 'tests/fixtures/before.json',
                 'tests/fixtures/after.json',
                 'plain'
             ],
             [
-                $expectedPlain,
-                __DIR__ . '/fixtures/before.yml',
-                __DIR__ . '/fixtures/after.yml',
-                'plain'
-            ],
-            [
-                $expectedPlain,
+                $expectedInPlainFormat,
                 'tests/fixtures/before.yml',
                 'tests/fixtures/after.yml',
                 'plain'
             ],
             [
-                $expectedPlainFromFilesWithTrees,
+                $expectedInPlainFormatFromFilesWithTrees,
                 'tests/fixtures/before_with_tree.json',
                 'tests/fixtures/after_with_tree.json',
                 'plain'
             ],
             [
-                $expectedJson,
+                $expectedInJsonFormat,
                 'tests/fixtures/before.json',
                 'tests/fixtures/after.json',
                 'json'
             ],
             [
-                $expectedJsonFromFilesWithTrees,
+                $expectedInJsonFormatFromFilesWithTrees,
                 'tests/fixtures/before_with_tree.json',
                 'tests/fixtures/after_with_tree.json',
                 'json'
@@ -244,11 +171,33 @@ class DiffTest extends TestCase
         ];
     }
 
-    public function testGenDiffsExceptions()
+    /**
+     * @dataProvider pathsForExceptionsProvider
+     */
+    public function testGenDiffsExceptions($pathFirst, $pathSecond, $format)
     {
-        $pathFirst = 'tests/fixtures/befor.json';
-        $pathSecond = 'tests/fixtures/after.json';
         $this->expectException(\Exception::class);
         genDiff($pathFirst, $pathSecond, 'pretty');
+    }
+
+    public function pathsForExceptionsProvider()
+    {
+        return [
+            [
+                'tests/fixtures/befor.json',
+                'tests/fixtures/after.json',
+                'pretty'
+            ],
+            [
+                'tests/fixtures/before.json',
+                'tests/fixtures/wrong.json',
+                'pretty'
+            ],
+            [
+                'tests/fixtures/before.yml',
+                'tests/fixtures/wrong.yml',
+                'pretty'
+            ]
+        ];
     }
 }
