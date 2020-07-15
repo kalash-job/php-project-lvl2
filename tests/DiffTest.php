@@ -19,93 +19,19 @@ class DiffTest extends TestCase
 
     public function pathsProvider()
     {
-        $expected = implode("\n", [
-            "{",
-            '    host: hexlet.io',
-            '  + timeout: 20',
-            '  - timeout: 50',
-            '  - proxy: 123.234.53.22',
-            '  + verbose: true',
-            "}\n"]);
+        $expected = file_get_contents('tests/fixtures/expected.txt');
 
-        $expectedAfterEmptyJson = implode("\n", [
-            "{",
-            '  - host: hexlet.io',
-            '  - timeout: 50',
-            '  - proxy: 123.234.53.22',
-            "}\n"]);
+        $expectedAfterEmptyJson = file_get_contents('tests/fixtures/expected_after_empty_json.txt');
 
-        $expectedInPlainFormat = implode("\n", [
-            "Property 'timeout' was changed. From 50 to 20",
-            "Property 'proxy' was removed",
-            "Property 'verbose' was added with value: true\n"
-        ]);
+        $expectedInPlainFormat = file_get_contents('tests/fixtures/expected_in_plain_format.txt');
 
-        $expectedFromFilesWithTreesLines = [
-            "{",
-            "    common: {",
-            "        setting1: Value 1",
-            "      - setting2: 200",
-            "        setting3: true",
-            "      - setting6: {",
-            "            key: value",
-            "        }",
-            "      + setting4: blah blah",
-            "      + setting5: {",
-            "            key5: value5",
-            "        }",
-            "    }",
-            "    group1: {",
-            "      + baz: bars",
-            "      - baz: bas",
-            "        foo: bar",
-            "    }",
-            "  - group2: {",
-            "        abc: 12345",
-            "    }",
-            "  + group3: {",
-            "        fee: 100500",
-            "    }",
-            "}\n"];
-        $expectedFromFilesWithTrees = implode("\n", $expectedFromFilesWithTreesLines);
+        $expectedFromFilesWithTrees = file_get_contents('tests/fixtures/expected_from_files_with_trees.txt');
 
-        $expectedPlainFromFilesWithTreesLines = [
-            "Property 'common.setting2' was removed",
-            "Property 'common.setting6' was removed",
-            "Property 'common.setting4' was added with value: 'blah blah'",
-            "Property 'common.setting5' was added with value: 'complex value'",
-            "Property 'group1.baz' was changed. From 'bas' to 'bars'",
-            "Property 'group2' was removed",
-            "Property 'group3' was added with value: 'complex value'\n",
-        ];
-        $expectedInPlainFormatFromFilesWithTrees = implode("\n", $expectedPlainFromFilesWithTreesLines);
+        $expectedPlainFormatFilesWithTrees = file_get_contents('tests/fixtures/expected_plain_files_with_trees.txt');
 
-        $expectedInJsonFormat = implode("", [
-            "{",
-            '"host":"hexlet.io",',
-            '"timeout":[',
-            '{',
-            '"type":"renewed",',
-            '"newValue":20,',
-            '"oldValue":50',
-            '}',
-            '],',
-            '"proxy":[',
-            '{',
-            '"type":"removed",',
-            '"removingValue":"123.234.53.22"',
-            '}',
-            '],',
-            '"verbose":[',
-            '{',
-            '"type":"added",',
-            '"addingValue":true',
-            '}',
-            ']',
-            "}\n"]);
+        $expectedInJsonFormat = file_get_contents('tests/fixtures/expected_in_json_format.json');
 
-        $json = file_get_contents('tests/fixtures/result.json');
-        $expectedInJsonFormatFromFilesWithTrees = "{$json}\n";
+        $expectedInJsonFormatFromFilesWithTrees = file_get_contents('tests/fixtures/result.json');
 
         return [
             [
@@ -151,7 +77,7 @@ class DiffTest extends TestCase
                 'plain'
             ],
             [
-                $expectedInPlainFormatFromFilesWithTrees,
+                $expectedPlainFormatFilesWithTrees,
                 'tests/fixtures/before_with_tree.json',
                 'tests/fixtures/after_with_tree.json',
                 'plain'
