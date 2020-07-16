@@ -17,81 +17,87 @@ class DiffTest extends TestCase
         $this->assertEquals($expected, $actual);
     }
 
+    private function getFixturePath($filename, $absolutePath = false)
+    {
+        $fixtureDirPath = $absolutePath ? __DIR__ . '/fixtures/' : 'tests/fixtures/';
+        return "{$fixtureDirPath}{$filename}";
+    }
+
     public function pathsProvider()
     {
-        $expected = file_get_contents('tests/fixtures/expected.txt');
+        $expected = file_get_contents($this->getFixturePath('expected.txt'));
 
-        $expectedAfterEmptyJson = file_get_contents('tests/fixtures/expected_after_empty_json.txt');
+        $expectedAfterEmptyJson = file_get_contents($this->getFixturePath('expected_after_empty_json.txt'));
 
-        $expectedInPlainFormat = file_get_contents('tests/fixtures/expected_in_plain_format.txt');
+        $expectedInPlainFormat = file_get_contents($this->getFixturePath('expected_in_plain_format.txt'));
 
-        $expectedFromFilesWithTrees = file_get_contents('tests/fixtures/expected_from_files_with_trees.txt');
+        $expectedFromFilesWithTrees = file_get_contents($this->getFixturePath('expected_from_files_with_trees.txt'));
 
-        $expectedPlainFormatFilesWithTrees = file_get_contents('tests/fixtures/expected_plain_files_with_trees.txt');
+        $expectedPlainFromFilesWithTrees = file_get_contents($this->getFixturePath('expected_plain_with_trees.txt'));
 
-        $expectedInJsonFormat = file_get_contents('tests/fixtures/expected_in_json_format.json');
+        $expectedInJsonFormat = file_get_contents($this->getFixturePath('expected_in_json_format.json'));
 
-        $expectedInJsonFormatFromFilesWithTrees = file_get_contents('tests/fixtures/result.json');
+        $expectedInJsonFormatFromFilesWithTrees = file_get_contents($this->getFixturePath('result.json'));
 
         return [
             [
                 $expected,
-                __DIR__ . '/fixtures/before.json',
-                __DIR__ . '/fixtures/after.json',
+                $this->getFixturePath('before.json', true),
+                $this->getFixturePath('after.json', true),
                 'pretty'
             ],
             [
                 $expected,
-                'tests/fixtures/before.json',
-                'tests/fixtures/after.json',
+                $this->getFixturePath('before.json'),
+                $this->getFixturePath('after.json'),
                 'pretty'
             ],
             [
                 $expected,
-                'tests/fixtures/before.yml',
-                'tests/fixtures/after.yml',
+                $this->getFixturePath('before.yml'),
+                $this->getFixturePath('after.yml'),
                 'pretty'
             ],
             [
                 $expectedAfterEmptyJson,
-                'tests/fixtures/before.json',
-                'tests/fixtures/empty.json',
+                $this->getFixturePath('before.json'),
+                $this->getFixturePath('empty.json'),
                 'pretty'
             ],
             [
                 $expectedFromFilesWithTrees,
-                'tests/fixtures/before_with_tree.json',
-                'tests/fixtures/after_with_tree.json',
+                $this->getFixturePath('before_with_tree.json'),
+                $this->getFixturePath('after_with_tree.json'),
                 'pretty'
             ],
             [
                 $expectedInPlainFormat,
-                'tests/fixtures/before.json',
-                'tests/fixtures/after.json',
+                $this->getFixturePath('before.json'),
+                $this->getFixturePath('after.json'),
                 'plain'
             ],
             [
                 $expectedInPlainFormat,
-                'tests/fixtures/before.yml',
-                'tests/fixtures/after.yml',
+                $this->getFixturePath('before.yml'),
+                $this->getFixturePath('after.yml'),
                 'plain'
             ],
             [
-                $expectedPlainFormatFilesWithTrees,
-                'tests/fixtures/before_with_tree.json',
-                'tests/fixtures/after_with_tree.json',
+                $expectedPlainFromFilesWithTrees,
+                $this->getFixturePath('before_with_tree.json'),
+                $this->getFixturePath('after_with_tree.json'),
                 'plain'
             ],
             [
                 $expectedInJsonFormat,
-                'tests/fixtures/before.json',
-                'tests/fixtures/after.json',
+                $this->getFixturePath('before.json'),
+                $this->getFixturePath('after.json'),
                 'json'
             ],
             [
                 $expectedInJsonFormatFromFilesWithTrees,
-                'tests/fixtures/before_with_tree.json',
-                'tests/fixtures/after_with_tree.json',
+                $this->getFixturePath('before_with_tree.json'),
+                $this->getFixturePath('after_with_tree.json'),
                 'json'
             ]
         ];
@@ -110,18 +116,18 @@ class DiffTest extends TestCase
     {
         return [
             [
-                'tests/fixtures/befor.json',
-                'tests/fixtures/after.json',
+                $this->getFixturePath('befor.json'),
+                $this->getFixturePath('after.json'),
                 'pretty'
             ],
             [
-                'tests/fixtures/before.json',
-                'tests/fixtures/wrong.json',
+                $this->getFixturePath('before.json'),
+                $this->getFixturePath('wrong.json'),
                 'pretty'
             ],
             [
-                'tests/fixtures/before.yml',
-                'tests/fixtures/wrong.yml',
+                $this->getFixturePath('before.yml'),
+                $this->getFixturePath('wrong.yml'),
                 'pretty'
             ]
         ];
