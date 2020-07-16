@@ -10,42 +10,29 @@ use function Differ\Json\renderJsonDiff;
 
 function getDiff($before, $after): array
 {
-    $iter = function ($nodeBefore, $nodeAfter, $diff) use (&$iter) {
-        $firstColl = (array)$nodeBefore;
-        $secondColl = (array)$nodeAfter;
+        $firstColl = (array)$before;
+        $secondColl = (array)$after;
         $keys = array_keys(array_merge($firstColl, $secondColl));
-        $diff = array_reduce($keys, function ($acc, $key) use ($firstColl, $secondColl, &$iter) {
+        return array_map(function ($key) use ($firstColl, $secondColl) {
             $nodeFirst = isset($firstColl[$key]) ? ($firstColl[$key]) : null;
             $nodeSecond = isset($secondColl[$key]) ? ($secondColl[$key]) : null;
             if (!isset($nodeFirst)) {
-                $acc[] = ['key' => $key, 'value' => $nodeSecond, 'type' => 'added'];
-                return $acc;
+                return ['key' => $key, 'value' => $nodeSecond, 'type' => 'added'];
             } elseif (!isset($nodeSecond)) {
-                $acc[] = ['key' => $key, 'value' => $nodeFirst, 'type' => 'removed'];
-                return $acc;
+                return ['key' => $key, 'value' => $nodeFirst, 'type' => 'removed'];
             }
             if (is_object($nodeFirst) && is_object($nodeSecond)) {
-                $children = $iter($nodeFirst, $nodeSecond, []);
-                $acc[] = ['key' => $key, 'type' => 'former', 'children' => $children];
-                return $acc;
+                $children = getDiff($nodeFirst, $nodeSecond);
+                return ['key' => $key, 'type' => 'former', 'children' => $children];
             } elseif (is_object($nodeFirst) || is_object($nodeSecond)) {
-                $acc[] = ['key' => $key, 'value' => $nodeSecond, 'type' => 'renewed'];
-                $acc[] = ['key' => $key, 'value' => $nodeFirst, 'type' => 'removed'];
-                return $acc;
+                return ['key' => $key, 'newValue' => $nodeSecond, 'oldValue' => $nodeFirst, 'type' => 'renewed'];
             }
             if ($nodeFirst === $nodeSecond) {
-                $acc[] = ['key' => $key, 'value' => $nodeFirst, 'type' => 'former'];
-                return $acc;
+                return  ['key' => $key, 'value' => $nodeFirst, 'type' => 'former'];
             } else {
-                $acc[] = ['key' => $key, 'value' => $nodeSecond, 'type' => 'renewed'];
-                $acc[] = ['key' => $key, 'value' => $nodeFirst, 'type' => 'removed'];
-                return $acc;
+                return ['key' => $key, 'newValue' => $nodeSecond, 'oldValue' => $nodeFirst, 'type' => 'renewed'];
             }
-        }, []);
-        return $diff;
-    };
-    $result = $iter($before, $after, []);
-    return $result;
+        }, $keys);
 }
 
 function chooseOutputsFormat($differences, string $format)
@@ -59,29 +46,28 @@ function chooseOutputsFormat($differences, string $format)
     }
 }
 
+function chooseParser(string $path)
+{
+    $extension = pathinfo($path, PATHINFO_EXTENSION);
+    if ($extension === 'json') {
+        $data = parseJson(file_get_contents($path));
+    } elseif ($extension === 'yaml' || $extension === 'yml') {
+        $data = parseYaml(file_get_contents($path));
+    } else {
+        throw new \Exception("File $path must be in JSON or YAML format\n");
+    }
+    return $data;
+}
+
 function genDiff(string $pathFirst, string $pathSecond, string $format)
 {
     if (!file_exists($pathFirst) || !file_exists($pathSecond)) {
         $filesName = !file_exists($pathFirst) ? $pathFirst : $pathSecond;
+
         throw new \Exception("File {$filesName} not found. You should write a correct path to the file\n");
     }
-    $extensionFirst = pathinfo($pathFirst, PATHINFO_EXTENSION);
-    $extensionSecond = pathinfo($pathSecond, PATHINFO_EXTENSION);
-    $isJsonOrYmlFirst = $extensionFirst === 'json' || $extensionFirst === 'yml';
-    $isJsonOrYmlSecond = $extensionSecond === 'json' || $extensionSecond === 'yml';
-    if (!$isJsonOrYmlFirst || !$isJsonOrYmlSecond) {
-        throw new \Exception("Both of files must be in JSON or YAML format\n");
-    }
-    if ($extensionFirst === 'json') {
-        $firstData = parseJson(file_get_contents($pathFirst));
-    } else {
-        $firstData = parseYaml(file_get_contents($pathFirst));
-    }
-    if ($extensionSecond === 'json') {
-        $secondData = parseJson(file_get_contents($pathSecond));
-    } else {
-        $secondData = parseYaml(file_get_contents($pathSecond));
-    }
+    $firstData = chooseParser($pathFirst);
+    $secondData = chooseParser($pathSecond);
     $differences = getDiff($firstData, $secondData);
     return chooseOutputsFormat($differences, $format);
 }

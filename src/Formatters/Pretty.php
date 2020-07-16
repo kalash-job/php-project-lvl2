@@ -47,9 +47,9 @@ function renderDiff(array $diff): string
             $lines[] = "{$offset}}";
             return $depth;
         }
+        $offset = str_repeat('    ', $depth - 1);
+        $prefix = getPrefix($node);
         if (isset($node['value']) && is_object($node['value'])) {
-            $offset = str_repeat('    ', $depth - 1);
-            $prefix = getPrefix($node);
             $lines[] = "{$offset}{$prefix}{$node['key']}{$openingBracket}";
             $value = formatObject($node['value']);
             array_reduce($value, $iter, $depth + 1);
@@ -57,8 +57,6 @@ function renderDiff(array $diff): string
             return $depth;
         }
         if (isset($node['value'])) {
-            $offset = str_repeat('    ', $depth - 1);
-            $prefix = getPrefix($node);
             if ($node['value'] === true) {
                 $value = 'true';
             } elseif ($node['value'] === false) {
@@ -69,6 +67,9 @@ function renderDiff(array $diff): string
             $lines[] = "{$offset}{$prefix}{$node['key']}: {$value}";
             return $depth;
         }
+        $lines[] = "{$offset}{$prefix}{$node['key']}: {$node['newValue']}";
+        $lines[] = "{$offset}  - {$node['key']}: {$node['oldValue']}";
+        return $depth;
     };
     $startDepth = 1;
     array_reduce($diff, $iter, $startDepth);

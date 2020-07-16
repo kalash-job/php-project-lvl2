@@ -4,8 +4,7 @@ namespace Differ\Json;
 
 function renderJsonDiff(array $diff): string
 {
-    $newValue = null;
-    $iter = function ($acc, $node) use (&$newValue, &$iter) {
+    $iter = function ($acc, $node) use (&$iter) {
         if (isset($node['children'])) {
             $children = array_reduce($node['children'], $iter, []);
             $acc[$node['key']] = $children;
@@ -20,19 +19,14 @@ function renderJsonDiff(array $diff): string
             $acc[$node['key']] = $node['value'];
             return $acc;
         }
-        if ($node['type'] === 'renewed') {
-            $newValue = $node['value'];
-            return $acc;
-        }
-        if ($node['type'] === 'removed' && $newValue === null) {
+        if ($node['type'] === 'removed') {
             $value = ['type' => 'removed', 'removingValue' => $node['value']];
             $acc[$node['key']] = [$value];
             return $acc;
         }
-        if ($node['type'] === 'removed') {
-            $value = ['type' => 'renewed', 'newValue' => $newValue, 'oldValue' => $node['value']];
+        if ($node['type'] === 'renewed') {
+            $value = ['type' => 'renewed', 'newValue' => $node['newValue'], 'oldValue' => $node['oldValue']];
             $acc[$node['key']] = [$value];
-            $newValue = null;
             return $acc;
         }
     };

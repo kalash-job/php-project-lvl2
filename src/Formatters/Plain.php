@@ -19,11 +19,16 @@ function correctValue($value)
 function renderPlainDiff(array $diff): string
 {
     $lines = [];
-    $newValue = null;
-    $iter = function ($path, $node) use (&$lines, &$iter, &$newValue) {
+    $iter = function ($path, $node) use (&$lines, &$iter) {
         if (isset($node['children'])) {
             $newPath = "{$path}{$node['key']}.";
             array_reduce($node['children'], $iter, $newPath);
+            return $path;
+        }
+        if ($node['type'] === 'renewed') {
+            $oldValue = correctValue($node['oldValue']);
+            $newValue = correctValue($node['newValue']);
+            $lines[] = "Property '{$path}{$node['key']}' was changed. From {$oldValue} to {$newValue}";
             return $path;
         }
         $value = correctValue($node['value']);
@@ -31,17 +36,8 @@ function renderPlainDiff(array $diff): string
             $lines[] = "Property '{$path}{$node['key']}' was added with value: {$value}";
             return $path;
         }
-        if ($node['type'] === 'renewed') {
-            $newValue = $value;
-            return $path;
-        }
         if ($node['type'] === 'removed') {
-            if (is_null($newValue)) {
-                $lines[] = "Property '{$path}{$node['key']}' was removed";
-                return $path;
-            }
-            $lines[] = "Property '{$path}{$node['key']}' was changed. From {$value} to {$newValue}";
-            $newValue = null;
+            $lines[] = "Property '{$path}{$node['key']}' was removed";
             return $path;
         }
         return $path;
