@@ -18,8 +18,8 @@
     },
     "autoload": {
         "psr-4": {
-            "Php\\Package\\": "src",
-            "Php\\Package\\Tests\\": "tests"
+            "Differ\\": "src",
+            "Differ\\Tests\\": "tests"
         },
         "files": [
             "src/Diff.php",
