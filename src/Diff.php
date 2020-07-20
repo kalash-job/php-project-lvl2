@@ -15,9 +15,9 @@ function getDiff($before, $after): array
         return array_map(function ($key) use ($firstColl, $secondColl) {
             $nodeFirst = isset($firstColl[$key]) ? ($firstColl[$key]) : null;
             $nodeSecond = isset($secondColl[$key]) ? ($secondColl[$key]) : null;
-            if (!isset($nodeFirst)) {
+            if (is_null($nodeFirst)) {
                 return ['key' => $key, 'value' => $nodeSecond, 'type' => 'added'];
-            } elseif (!isset($nodeSecond)) {
+            } elseif (is_null($nodeSecond)) {
                 return ['key' => $key, 'value' => $nodeFirst, 'type' => 'removed'];
             }
             if (is_object($nodeFirst) && is_object($nodeSecond)) {
