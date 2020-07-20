@@ -48,9 +48,7 @@ function getRender($differences, string $format)
 function genDiff(string $pathFirst, string $pathSecond, string $format)
 {
     if (!file_exists($pathFirst) || !file_exists($pathSecond)) {
-        $filesName = !file_exists($pathFirst) ? $pathFirst : $pathSecond;
-
-        throw new \Exception("File {$filesName} not found. You should write a correct path to the file\n");
+        throw new \Exception("File not found. You should write a correct path to the file\n");
     }
     $contentFirst = file_get_contents($pathFirst);
     $contentSecond = file_get_contents($pathSecond);
