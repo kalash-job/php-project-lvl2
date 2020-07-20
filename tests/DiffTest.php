@@ -25,74 +25,30 @@ class DiffTest extends TestCase
 
     public function pathsProvider()
     {
-        $expected = file_get_contents($this->getFixturePath('expected.txt'));
-
-        $expectedAfterEmptyJson = file_get_contents($this->getFixturePath('expected_after_empty_json.txt'));
-
-        $expectedInPlainFormat = file_get_contents($this->getFixturePath('expected_in_plain_format.txt'));
-
         $expectedFromFilesWithTrees = file_get_contents($this->getFixturePath('expected_from_files_with_trees.txt'));
 
         $expectedPlainFromFilesWithTrees = file_get_contents($this->getFixturePath('expected_plain_with_trees.txt'));
-
-        $expectedInJsonFormat = file_get_contents($this->getFixturePath('expected_in_json_format.json'));
 
         $expectedInJsonFormatFromFilesWithTrees = file_get_contents($this->getFixturePath('result.json'));
 
         return [
             [
-                $expected,
-                $this->getFixturePath('before.json', true),
-                $this->getFixturePath('after.json', true),
-                'pretty'
-            ],
-            [
-                $expected,
-                $this->getFixturePath('before.json'),
-                $this->getFixturePath('after.json'),
-                'pretty'
-            ],
-            [
-                $expected,
+                $expectedFromFilesWithTrees,
                 $this->getFixturePath('before.yml'),
                 $this->getFixturePath('after.yml'),
-                'pretty'
-            ],
-            [
-                $expectedAfterEmptyJson,
-                $this->getFixturePath('before.json'),
-                $this->getFixturePath('empty.json'),
                 'pretty'
             ],
             [
                 $expectedFromFilesWithTrees,
-                $this->getFixturePath('before_with_tree.json'),
+                $this->getFixturePath('before_with_tree.json', true),
                 $this->getFixturePath('after_with_tree.json'),
                 'pretty'
-            ],
-            [
-                $expectedInPlainFormat,
-                $this->getFixturePath('before.json'),
-                $this->getFixturePath('after.json'),
-                'plain'
-            ],
-            [
-                $expectedInPlainFormat,
-                $this->getFixturePath('before.yml'),
-                $this->getFixturePath('after.yml'),
-                'plain'
             ],
             [
                 $expectedPlainFromFilesWithTrees,
                 $this->getFixturePath('before_with_tree.json'),
                 $this->getFixturePath('after_with_tree.json'),
                 'plain'
-            ],
-            [
-                $expectedInJsonFormat,
-                $this->getFixturePath('before.json'),
-                $this->getFixturePath('after.json'),
-                'json'
             ],
             [
                 $expectedInJsonFormatFromFilesWithTrees,
@@ -103,33 +59,11 @@ class DiffTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider pathsForExceptionsProvider
-     */
-    public function testGenDiffsExceptions($pathFirst, $pathSecond, $format)
+    public function testGenDiffsExceptions()
     {
+        $pathFirst = $this->getFixturePath('before_with_tre.json');
+        $pathSecond = $this->getFixturePath('after_with_tree.json');
         $this->expectException(\Exception::class);
         genDiff($pathFirst, $pathSecond, 'pretty');
-    }
-
-    public function pathsForExceptionsProvider()
-    {
-        return [
-            [
-                $this->getFixturePath('befor.json'),
-                $this->getFixturePath('after.json'),
-                'pretty'
-            ],
-            [
-                $this->getFixturePath('before.json'),
-                $this->getFixturePath('wrong.json'),
-                'pretty'
-            ],
-            [
-                $this->getFixturePath('before.yml'),
-                $this->getFixturePath('wrong.yml'),
-                'pretty'
-            ]
-        ];
     }
 }

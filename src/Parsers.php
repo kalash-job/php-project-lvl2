@@ -11,5 +11,5 @@ function parseJson(string $jsonData)
 
 function parseYaml(string $yamlData)
 {
-    return Yaml::parse($yamlData);
+    return Yaml::parse($yamlData, Yaml::PARSE_OBJECT_FOR_MAP);
 }
