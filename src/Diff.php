@@ -23,8 +23,6 @@ function getDiff($before, $after): array
             if (is_object($nodeFirst) && is_object($nodeSecond)) {
                 $children = getDiff($nodeFirst, $nodeSecond);
                 return ['key' => $key, 'type' => 'former', 'children' => $children];
-            } elseif (is_object($nodeFirst) || is_object($nodeSecond)) {
-                return ['key' => $key, 'newValue' => $nodeSecond, 'oldValue' => $nodeFirst, 'type' => 'renewed'];
             }
             if ($nodeFirst === $nodeSecond) {
                 return  ['key' => $key, 'value' => $nodeFirst, 'type' => 'former'];
