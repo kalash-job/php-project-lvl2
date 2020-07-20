@@ -2,8 +2,7 @@
 
 namespace Differ\Diff;
 
-use function Differ\Parsers\parseJson;
-use function Differ\Parsers\parseYaml;
+use function Differ\Parsers\parse;
 use function Differ\Plain\renderPlainDiff;
 use function Differ\Pretty\renderDiff;
 use function Differ\Json\renderJsonDiff;
@@ -35,7 +34,7 @@ function getDiff($before, $after): array
         }, $keys);
 }
 
-function chooseOutputsFormat($differences, string $format)
+function getRender($differences, string $format)
 {
     if ($format === 'pretty') {
         return renderDiff($differences);
@@ -46,19 +45,6 @@ function chooseOutputsFormat($differences, string $format)
     }
 }
 
-function chooseParser(string $path)
-{
-    $extension = pathinfo($path, PATHINFO_EXTENSION);
-    if ($extension === 'json') {
-        $data = parseJson(file_get_contents($path));
-    } elseif ($extension === 'yaml' || $extension === 'yml') {
-        $data = parseYaml(file_get_contents($path));
-    } else {
-        throw new \Exception("File $path must be in JSON or YAML format\n");
-    }
-    return $data;
-}
-
 function genDiff(string $pathFirst, string $pathSecond, string $format)
 {
     if (!file_exists($pathFirst) || !file_exists($pathSecond)) {
@@ -66,8 +52,12 @@ function genDiff(string $pathFirst, string $pathSecond, string $format)
 
         throw new \Exception("File {$filesName} not found. You should write a correct path to the file\n");
     }
-    $firstData = chooseParser($pathFirst);
-    $secondData = chooseParser($pathSecond);
+    $contentFirst = file_get_contents($pathFirst);
+    $contentSecond = file_get_contents($pathSecond);
+    $extensionFirst = pathinfo($pathFirst, PATHINFO_EXTENSION);
+    $extensionSecond = pathinfo($pathSecond, PATHINFO_EXTENSION);
+    $firstData = parse($contentFirst, $extensionFirst);
+    $secondData = parse($contentSecond, $extensionSecond);
     $differences = getDiff($firstData, $secondData);
-    return chooseOutputsFormat($differences, $format);
+    return getRender($differences, $format);
 }
