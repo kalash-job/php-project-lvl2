@@ -32,7 +32,7 @@ function getDiff($before, $after): array
         }, $keys);
 }
 
-function getRender($differences, string $format)
+function render($differences, string $format)
 {
     if ($format === 'pretty') {
         return renderDiff($differences);
@@ -55,5 +55,5 @@ function genDiff(string $pathFirst, string $pathSecond, string $format)
     $firstData = parse($contentFirst, $extensionFirst);
     $secondData = parse($contentSecond, $extensionSecond);
     $differences = getDiff($firstData, $secondData);
-    return getRender($differences, $format);
+    return render($differences, $format);
 }
