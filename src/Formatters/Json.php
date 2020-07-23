@@ -24,8 +24,8 @@ function renderJsonDiff(array $diff): string
             $acc[$node['key']] = [$value];
             return $acc;
         }
-        if ($node['type'] === 'renewed') {
-            $value = ['type' => 'renewed', 'newValue' => $node['newValue'], 'oldValue' => $node['oldValue']];
+        if ($node['type'] === 'changed') {
+            $value = ['type' => 'changed', 'newValue' => $node['newValue'], 'oldValue' => $node['oldValue']];
             $acc[$node['key']] = [$value];
             return $acc;
         }

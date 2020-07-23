@@ -25,7 +25,7 @@ function renderPlainDiff(array $diff): string
             array_reduce($node['children'], $iter, $newPath);
             return $path;
         }
-        if ($node['type'] === 'renewed') {
+        if ($node['type'] === 'changed') {
             $oldValue = stringify($node['oldValue']);
             $newValue = stringify($node['newValue']);
             $lines[] = "Property '{$path}{$node['key']}' was changed. From {$oldValue} to {$newValue}";

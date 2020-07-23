@@ -12,7 +12,7 @@ function getPrefix($node): string
     }
     if ($node['type'] === 'former') {
         return $prefixSpaces;
-    } elseif ($node['type'] === 'added' || $node['type'] === 'renewed') {
+    } elseif ($node['type'] === 'added' || $node['type'] === 'changed') {
         return $prefixPlus;
     } else {
         return $prefixMinus;

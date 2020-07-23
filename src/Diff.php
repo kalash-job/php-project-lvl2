@@ -27,7 +27,7 @@ function getDiff($before, $after): array
             if ($nodeFirst === $nodeSecond) {
                 return  ['key' => $key, 'value' => $nodeFirst, 'type' => 'former'];
             } else {
-                return ['key' => $key, 'newValue' => $nodeSecond, 'oldValue' => $nodeFirst, 'type' => 'renewed'];
+                return ['key' => $key, 'newValue' => $nodeSecond, 'oldValue' => $nodeFirst, 'type' => 'changed'];
             }
         }, $keys);
 }
