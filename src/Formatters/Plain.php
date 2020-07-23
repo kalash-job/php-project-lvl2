@@ -2,7 +2,7 @@
 
 namespace Differ\Plain;
 
-function correctValue($value)
+function stringify($value)
 {
     if ($value === true) {
         return 'true';
@@ -26,12 +26,12 @@ function renderPlainDiff(array $diff): string
             return $path;
         }
         if ($node['type'] === 'renewed') {
-            $oldValue = correctValue($node['oldValue']);
-            $newValue = correctValue($node['newValue']);
+            $oldValue = stringify($node['oldValue']);
+            $newValue = stringify($node['newValue']);
             $lines[] = "Property '{$path}{$node['key']}' was changed. From {$oldValue} to {$newValue}";
             return $path;
         }
-        $value = correctValue($node['value']);
+        $value = stringify($node['value']);
         if ($node['type'] === 'added') {
             $lines[] = "Property '{$path}{$node['key']}' was added with value: {$value}";
             return $path;
