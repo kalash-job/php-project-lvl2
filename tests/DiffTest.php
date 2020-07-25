@@ -11,15 +11,17 @@ class DiffTest extends TestCase
     /**
      * @dataProvider pathsProvider
      */
-    public function testGenDiffWithPaths($expected, $pathFirst, $pathSecond, $format)
+    public function testGenDiffWithPaths($expected, $firstFileName, $secondFileName, $format)
     {
+        $pathFirst = $this->getFixturePath($firstFileName);
+        $pathSecond = $this->getFixturePath($secondFileName);
         $actual = genDiff($pathFirst, $pathSecond, $format);
         $this->assertEquals($expected, $actual);
     }
 
-    private function getFixturePath($filename, $absolutePath = false)
+    private function getFixturePath($filename)
     {
-        $fixtureDirPath = $absolutePath ? __DIR__ . '/fixtures/' : 'tests/fixtures/';
+        $fixtureDirPath = 'tests/fixtures/';
         return "{$fixtureDirPath}{$filename}";
     }
 
@@ -34,26 +36,26 @@ class DiffTest extends TestCase
         return [
             [
                 $expectedFromFilesWithTrees,
-                $this->getFixturePath('before.yml'),
-                $this->getFixturePath('after.yml'),
+                'before.yml',
+                'after.yml',
                 'pretty'
             ],
             [
                 $expectedFromFilesWithTrees,
-                $this->getFixturePath('before_with_tree.json', true),
-                $this->getFixturePath('after_with_tree.json'),
+                'before_with_tree.json',
+                'after_with_tree.json',
                 'pretty'
             ],
             [
                 $expectedPlainFromFilesWithTrees,
-                $this->getFixturePath('before_with_tree.json'),
-                $this->getFixturePath('after_with_tree.json'),
+                'before_with_tree.json',
+                'after_with_tree.json',
                 'plain'
             ],
             [
                 $expectedInJsonFormatFromFilesWithTrees,
-                $this->getFixturePath('before_with_tree.json'),
-                $this->getFixturePath('after_with_tree.json'),
+                'before_with_tree.json',
+                'after_with_tree.json',
                 'json'
             ]
         ];
