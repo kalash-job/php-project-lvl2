@@ -5,8 +5,8 @@ namespace Differ\Json;
 function renderJsonDiff(array $diff): string
 {
     $iter = function ($acc, $node) use (&$iter) {
-        if (isset($node['children'])) {
-            $children = array_reduce($node['children'], $iter, []);
+        if ($node['type'] === 'parent') {
+            $children = array_reduce($node['value'], $iter, []);
             $acc[$node['key']] = $children;
             return $acc;
         }

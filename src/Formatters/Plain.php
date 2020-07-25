@@ -18,37 +18,39 @@ function stringify($value)
 
 function iter($node, string $path, array $lines): array
 {
-    if (isset($node['children'])) {
-        $newPath = "{$path}{$node['key']}.";
-        $lines = array_reduce($node['children'], function ($acc, $child) use ($newPath) {
-            return iter($child, $newPath, $acc);
-        }, $lines);
+    if (isset($node['type'])) {
+        switch ($node['type']) {
+            case 'parent':
+                $newPath = "{$path}{$node['key']}.";
+                $lines = iter($node['value'], $newPath, $lines);
+                break;
+            case 'changed':
+                $oldValue = stringify($node['oldValue']);
+                $newValue = stringify($node['newValue']);
+                $lines[] = "Property '{$path}{$node['key']}' was changed. From {$oldValue} to {$newValue}";
+                break;
+            case 'added':
+                $value = stringify($node['value']);
+                $lines[] = "Property '{$path}{$node['key']}' was added with value: {$value}";
+                break;
+            case 'removed':
+                $lines[] = "Property '{$path}{$node['key']}' was removed";
+                break;
+            case 'former':
+                break;
+            default:
+                throw new \Exception("Unknown node type '{$node['type']}'");
+        }
         return $lines;
     }
-    if ($node['type'] === 'changed') {
-        $oldValue = stringify($node['oldValue']);
-        $newValue = stringify($node['newValue']);
-        $lines[] = "Property '{$path}{$node['key']}' was changed. From {$oldValue} to {$newValue}";
-        return $lines;
-    }
-    $value = stringify($node['value']);
-    if ($node['type'] === 'added') {
-        $lines[] = "Property '{$path}{$node['key']}' was added with value: {$value}";
-        return $lines;
-    }
-    if ($node['type'] === 'removed') {
-        $lines[] = "Property '{$path}{$node['key']}' was removed";
-        return $lines;
-    }
-    return $lines;
+    return array_reduce($node, function ($acc, $newNode) use ($path) {
+        return iter($newNode, $path, $acc);
+    }, $lines);
 }
 
 function renderPlainDiff(array $diff): string
 {
-    $path = '';
-    $lines = array_reduce($diff, function ($acc, $node) use ($path) {
-        return iter($node, $path, $acc);
-    }, []);
+    $lines = iter($diff, '', []);
     $result = implode("\n", $lines);
     return "{$result}\n";
 }
