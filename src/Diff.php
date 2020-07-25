@@ -22,7 +22,7 @@ function getDiff($before, $after): array
             }
             if (is_object($nodeFirst) && is_object($nodeSecond)) {
                 $children = getDiff($nodeFirst, $nodeSecond);
-                return ['key' => $key, 'type' => 'former', 'children' => $children];
+                return ['key' => $key, 'type' => 'parent', 'value' => $children];
             }
             if ($nodeFirst === $nodeSecond) {
                 return  ['key' => $key, 'value' => $nodeFirst, 'type' => 'former'];
