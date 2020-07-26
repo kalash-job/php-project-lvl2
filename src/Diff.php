@@ -9,27 +9,27 @@ use function Differ\Json\renderJsonDiff;
 
 function getDiff($before, $after): array
 {
-        $firstColl = (array)$before;
-        $secondColl = (array)$after;
-        $keys = array_keys(array_merge($firstColl, $secondColl));
-        return array_map(function ($key) use ($firstColl, $secondColl) {
-            $nodeFirst = isset($firstColl[$key]) ? ($firstColl[$key]) : null;
-            $nodeSecond = isset($secondColl[$key]) ? ($secondColl[$key]) : null;
-            if (is_null($nodeFirst)) {
-                return ['key' => $key, 'value' => $nodeSecond, 'type' => 'added'];
-            } elseif (is_null($nodeSecond)) {
-                return ['key' => $key, 'value' => $nodeFirst, 'type' => 'removed'];
-            }
-            if (is_object($nodeFirst) && is_object($nodeSecond)) {
-                $children = getDiff($nodeFirst, $nodeSecond);
-                return ['key' => $key, 'type' => 'parent', 'value' => $children];
-            }
-            if ($nodeFirst === $nodeSecond) {
-                return  ['key' => $key, 'value' => $nodeFirst, 'type' => 'former'];
-            } else {
-                return ['key' => $key, 'newValue' => $nodeSecond, 'oldValue' => $nodeFirst, 'type' => 'changed'];
-            }
-        }, $keys);
+    $firstColl = (array)$before;
+    $secondColl = (array)$after;
+    $keys = array_keys(array_merge($firstColl, $secondColl));
+    return array_map(function ($key) use ($firstColl, $secondColl) {
+        if (!array_key_exists($key, $firstColl)) {
+            return ['key' => $key, 'value' => $secondColl[$key], 'type' => 'added'];
+        } elseif (!array_key_exists($key, $secondColl)) {
+            return ['key' => $key, 'value' => $firstColl[$key], 'type' => 'removed'];
+        }
+        $nodeFirst = $firstColl[$key];
+        $nodeSecond = $secondColl[$key];
+        if (is_object($nodeFirst) && is_object($nodeSecond)) {
+            $children = getDiff($nodeFirst, $nodeSecond);
+            return ['key' => $key, 'type' => 'parent', 'value' => $children];
+        }
+        if ($nodeFirst === $nodeSecond) {
+            return  ['key' => $key, 'value' => $nodeFirst, 'type' => 'former'];
+        } else {
+            return ['key' => $key, 'newValue' => $nodeSecond, 'oldValue' => $nodeFirst, 'type' => 'changed'];
+        }
+    }, $keys);
 }
 
 function render($differences, string $format)

@@ -2,8 +2,6 @@
 
 namespace Differ\Pretty;
 
-use phpDocumentor\Reflection\Types\Integer;
-
 function getPrefix($node): string
 {
     $prefixMinus = '  - ';
@@ -36,6 +34,18 @@ function formatObject(object $node): array
     }, []);
 }
 
+function stringify($value)
+{
+    if ($value === true) {
+        return 'true';
+    } elseif ($value === false) {
+        return 'false';
+    } elseif ($value === null) {
+        return 'null';
+    }
+    return $value;
+}
+
 function iter($node, int $depth, array $lines): array
 {
     $openingBracket = ': {';
@@ -52,7 +62,7 @@ function iter($node, int $depth, array $lines): array
     }
     $offset = str_repeat('    ', $depth - 1);
     $prefix = getPrefix($node);
-    if (isset($node['value']) && is_object($node['value'])) {
+    if (array_key_exists('value', $node) && is_object($node['value'])) {
         $lines[] = "{$offset}{$prefix}{$node['key']}{$openingBracket}";
         $value = formatObject($node['value']);
         $newDepth = $depth + 1;
@@ -62,19 +72,15 @@ function iter($node, int $depth, array $lines): array
         $lines[] = "{$offset}{$closingBracket}";
         return $lines;
     }
-    if (isset($node['value'])) {
-        if ($node['value'] === true) {
-            $value = 'true';
-        } elseif ($node['value'] === false) {
-            $value = 'false';
-        } else {
-            $value = $node['value'];
-        }
+    if (array_key_exists('value', $node)) {
+        $value = stringify($node['value']);
         $lines[] = "{$offset}{$prefix}{$node['key']}: {$value}";
         return $lines;
     }
-    $lines[] = "{$offset}{$prefix}{$node['key']}: {$node['newValue']}";
-    $lines[] = "{$offset}  - {$node['key']}: {$node['oldValue']}";
+    $newValue = stringify($node['newValue']);
+    $oldValue = stringify($node['oldValue']);
+    $lines[] = "{$offset}{$prefix}{$node['key']}: {$newValue}";
+    $lines[] = "{$offset}  - {$node['key']}: {$oldValue}";
     return $lines;
 }
 
@@ -85,6 +91,5 @@ function renderDiff(array $diff): string
         return iter($node, $startDepth, $acc);
     }, ["{"]);
     $result = implode("\n", $lines);
-    //var_dump("{$result}\n}\n");
     return "{$result}\n}\n";
 }

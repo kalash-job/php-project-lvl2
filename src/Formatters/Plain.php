@@ -8,6 +8,8 @@ function stringify($value)
         return 'true';
     } elseif ($value === false) {
         return 'false';
+    } elseif ($value === null) {
+        return 'null';
     } elseif (is_object($value)) {
         return "'complex value'";
     } elseif (is_string($value)) {
