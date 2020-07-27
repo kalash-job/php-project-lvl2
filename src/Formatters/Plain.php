@@ -45,8 +45,8 @@ function iter($node, string $path, array $lines): array
         }
         return $lines;
     }
-    return array_reduce($node, function ($acc, $newNode) use ($path) {
-        return iter($newNode, $path, $acc);
+    return array_reduce($node, function ($acc, $child) use ($path) {
+        return iter($child, $path, $acc);
     }, $lines);
 }
 

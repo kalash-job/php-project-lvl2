@@ -2,7 +2,7 @@
 
 namespace Differ\Pretty;
 
-function getPrefix($node): string
+function getPrefix($node)
 {
     $prefixMinus = '  - ';
     $prefixPlus = '  + ';
@@ -10,10 +10,14 @@ function getPrefix($node): string
     if (!isset($node['type'])) {
         return $prefixSpaces;
     }
-    if ($node['type'] === 'former') {
+    if ($node['type'] === 'former' || $node['type'] === 'object') {
         return $prefixSpaces;
-    } elseif ($node['type'] === 'added' || $node['type'] === 'changed') {
+    } elseif ($node['type'] === 'added') {
         return $prefixPlus;
+    } elseif ($node['type'] === 'parent') {
+        return $prefixSpaces;
+    } elseif ($node['type'] === 'changed') {
+        return [$prefixPlus, $prefixMinus];
     } else {
         return $prefixMinus;
     }
@@ -29,7 +33,7 @@ function formatObject(object $node): array
         } else {
             $value = $nodeAsColl[$key];
         }
-        $acc[] = ['key' => $key, 'value' => $value];
+        $acc[] = ['key' => $key, 'value' => $value, 'type' => 'object'];
         return $acc;
     }, []);
 }
@@ -50,46 +54,45 @@ function iter($node, int $depth, array $lines): array
 {
     $openingBracket = ': {';
     $closingBracket = '    }';
-    if (isset($node['type']) && $node['type'] === 'parent') {
-        $offset = str_repeat('    ', $depth);
-        $lines[] = "{$offset}{$node['key']}{$openingBracket}";
-        $newDepth = $depth + 1;
-        $lines = array_reduce($node['value'], function ($acc, $child) use ($newDepth) {
-            return iter($child, $newDepth, $acc);
-        }, $lines);
-        $lines[] = "{$offset}}";
+    if (isset($node['type'])) {
+        $offset = str_repeat('    ', $depth - 1);
+        $prefix = getPrefix($node);
+        if ($node['type'] === 'parent') {
+            $lines[] = "{$offset}{$prefix}{$node['key']}{$openingBracket}";
+            $newDepth = $depth + 1;
+            $lines = iter($node['value'], $newDepth, $lines);
+            $lines[] = "{$offset}{$closingBracket}";
+            return $lines;
+        }
+        if ($node['type'] !== 'changed' && is_object($node['value'])) {
+            $lines[] = "{$offset}{$prefix}{$node['key']}{$openingBracket}";
+            $value = formatObject($node['value']);
+            $newDepth = $depth + 1;
+            $lines = iter($value, $newDepth, $lines);
+            $lines[] = "{$offset}{$closingBracket}";
+            return $lines;
+        }
+        if ($node['type'] !== 'changed') {
+            $value = stringify($node['value']);
+            $lines[] = "{$offset}{$prefix}{$node['key']}: {$value}";
+            return $lines;
+        }
+        $newValue = stringify($node['newValue']);
+        $oldValue = stringify($node['oldValue']);
+        $lines[] = "{$offset}{$prefix[0]}{$node['key']}: {$newValue}";
+        $lines[] = "{$offset}{$prefix[1]}{$node['key']}: {$oldValue}";
         return $lines;
     }
-    $offset = str_repeat('    ', $depth - 1);
-    $prefix = getPrefix($node);
-    if (array_key_exists('value', $node) && is_object($node['value'])) {
-        $lines[] = "{$offset}{$prefix}{$node['key']}{$openingBracket}";
-        $value = formatObject($node['value']);
-        $newDepth = $depth + 1;
-        $lines = array_reduce($value, function ($acc, $child) use ($newDepth) {
-            return iter($child, $newDepth, $acc);
-        }, $lines);
-        $lines[] = "{$offset}{$closingBracket}";
-        return $lines;
-    }
-    if (array_key_exists('value', $node)) {
-        $value = stringify($node['value']);
-        $lines[] = "{$offset}{$prefix}{$node['key']}: {$value}";
-        return $lines;
-    }
-    $newValue = stringify($node['newValue']);
-    $oldValue = stringify($node['oldValue']);
-    $lines[] = "{$offset}{$prefix}{$node['key']}: {$newValue}";
-    $lines[] = "{$offset}  - {$node['key']}: {$oldValue}";
-    return $lines;
+    return array_reduce($node, function ($acc, $child) use ($depth) {
+        return iter($child, $depth, $acc);
+    }, $lines);
 }
 
 function renderDiff(array $diff): string
 {
     $startDepth = 1;
-    $lines = array_reduce($diff, function ($acc, $node) use ($startDepth) {
-        return iter($node, $startDepth, $acc);
-    }, ["{"]);
+    $startline = ["{"];
+    $lines = iter($diff, $startDepth, $startline);
     $result = implode("\n", $lines);
     return "{$result}\n}\n";
 }
