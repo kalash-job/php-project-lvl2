@@ -38,7 +38,7 @@ function iter($node, string $path, array $lines): array
             case 'removed':
                 $lines[] = "Property '{$path}{$node['key']}' was removed";
                 break;
-            case 'former':
+            case 'same':
                 break;
             default:
                 throw new \Exception("Unknown node type '{$node['type']}'");

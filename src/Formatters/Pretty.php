@@ -10,7 +10,7 @@ function getPrefix($node)
     if (!isset($node['type'])) {
         return $prefixSpaces;
     }
-    if ($node['type'] === 'former' || $node['type'] === 'object') {
+    if ($node['type'] === 'same' || $node['type'] === 'object') {
         return $prefixSpaces;
     } elseif ($node['type'] === 'added') {
         return $prefixPlus;

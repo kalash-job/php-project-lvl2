@@ -11,6 +11,6 @@ function parse(string $content, $format)
     } elseif ($format === 'yaml' || $format === 'yml') {
         return Yaml::parse($content, Yaml::PARSE_OBJECT_FOR_MAP);
     } else {
-        throw new \Exception("File must be in JSON or YAML format");
+        throw new \Exception("Invalid format: $format. Data must be in JSON or YAML format");
     }
 }
