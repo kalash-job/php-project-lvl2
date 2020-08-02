@@ -20,11 +20,7 @@ function stringify($value)
 
 function iter($node, string $path): array
 {
-    $type = isset($node['type']) ? $node['type'] : 'root';
-    switch ($type) {
-        case 'parent':
-            $newPath = "{$path}{$node['key']}.";
-            return iter($node['value'], $newPath);
+    switch ($node['type']) {
         case 'changed':
             $oldValue = stringify($node['oldValue']);
             $newValue = stringify($node['newValue']);
@@ -36,18 +32,23 @@ function iter($node, string $path): array
             return ["Property '{$path}{$node['key']}' was removed"];
         case 'same':
             return [];
-        case 'root':
-            return array_reduce($node, function ($acc, $child) use ($path) {
-                return array_merge($acc, iter($child, $path));
-            }, []);
+        case 'parent':
+            $newPath = "{$path}{$node['key']}.";
+            $children = $node['value'];
+            break;
         default:
             throw new \Exception("Unknown node type '{$node['type']}'");
     }
+    return array_reduce($children, function ($acc, $child) use ($newPath) {
+        return array_merge($acc, iter($child, $newPath));
+    }, []);
 }
 
 function renderPlainDiff(array $diff): string
 {
-    $lines = iter($diff, '');
+    $lines = array_reduce($diff, function ($acc, $node) {
+        return array_merge($acc, iter($node, ''));
+    }, []);
     $result = implode("\n", $lines);
     return "{$result}\n";
 }
