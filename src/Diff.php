@@ -7,11 +7,16 @@ use function Differ\Plain\renderPlainDiff;
 use function Differ\Pretty\renderDiff;
 use function Differ\Json\renderJsonDiff;
 
+function getUnionKeys(array $firstColl, array $secondColl): array
+{
+    return array_keys(array_merge($firstColl, $secondColl));
+}
+
 function getDiff($before, $after): array
 {
     $firstColl = (array)$before;
     $secondColl = (array)$after;
-    $mergedKeys = array_keys(array_merge($firstColl, $secondColl));
+    $mergedKeys = getUnionKeys($firstColl, $secondColl);
     return array_map(function ($key) use ($firstColl, $secondColl) {
         if (!array_key_exists($key, $firstColl)) {
             return ['key' => $key, 'value' => $secondColl[$key], 'type' => 'added'];
