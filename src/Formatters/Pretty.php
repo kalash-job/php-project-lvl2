@@ -34,48 +34,57 @@ function iter($node, int $depth): array
     $prefixMinus = '  - ';
     $prefixPlus = '  + ';
     $prefixSpaces = '    ';
-    $type = isset($node['type']) ? $node['type'] : 'root';
     $offset = str_repeat('    ', $depth - 1);
-    $renderStandartNode = function ($node, $prefix) use ($offset, $depth) {
-        if (is_object($node['value']) || $node['type'] === 'parent') {
-            $firstLine = ["{$offset}{$prefix}{$node['key']}: {"];
-            $value = is_object($node['value']) ? formatObject($node['value']) : $node['value'];
-            $newLines = iter($value, $depth + 1);
-            return array_merge($firstLine, $newLines, ["{$offset}    }"]);
-        } else {
-            $value = stringify($node['value']);
-            return ["{$offset}{$prefix}{$node['key']}: {$value}"];
-        }
-    };
-    switch ($type) {
-        case 'parent':
-            return $renderStandartNode($node, $prefixSpaces);
+    switch ($node['type']) {
         case 'same':
-            return $renderStandartNode($node, $prefixSpaces);
+            $prefix = $prefixSpaces;
+            if (!is_object($node['value'])) {
+                $value = stringify($node['value']);
+                return ["{$offset}{$prefix}{$node['key']}: {$value}"];
+            }
+            break;
         case 'added':
-            return $renderStandartNode($node, $prefixPlus);
+            $prefix = $prefixPlus;
+            if (!is_object($node['value'])) {
+                $value = stringify($node['value']);
+                return ["{$offset}{$prefix}{$node['key']}: {$value}"];
+            }
+            break;
         case 'removed':
-            return $renderStandartNode($node, $prefixMinus);
+            $prefix = $prefixMinus;
+            if (!is_object($node['value'])) {
+                $value = stringify($node['value']);
+                return ["{$offset}{$prefix}{$node['key']}: {$value}"];
+            }
+            break;
         case 'changed':
             $newValue = stringify($node['newValue']);
             $oldValue = stringify($node['oldValue']);
             $firstLine = ["{$offset}{$prefixPlus}{$node['key']}: {$newValue}"];
             $secondLine = ["{$offset}{$prefixMinus}{$node['key']}: {$oldValue}"];
             return array_merge($firstLine, $secondLine);
-        case 'root':
-            return array_reduce($node, function ($acc, $child) use ($depth) {
-                return array_merge($acc, iter($child, $depth));
-            }, []);
+        case 'parent':
+            $prefix = $prefixSpaces;
+            break;
         default:
             throw new \Exception("Unknown node type '{$node['type']}'");
     }
+
+    $firstLine = ["{$offset}{$prefix}{$node['key']}: {"];
+    $children = is_object($node['value']) ? formatObject($node['value']) : $node['value'];
+    $newLines = array_reduce($children, function ($acc, $child) use ($depth) {
+        return array_merge($acc, iter($child, $depth + 1));
+    }, []);
+    return array_merge($firstLine, $newLines, ["{$offset}    }"]);
 }
 
 function renderDiff(array $diff): string
 {
     $startDepth = 1;
     $startLine = ["{"];
-    $lines = iter($diff, $startDepth);
-    $result = implode("\n", array_merge($startLine, $lines));
+    $lines = array_reduce($diff, function ($acc, $node) use ($startDepth) {
+        return array_merge($acc, iter($node, $startDepth));
+    }, $startLine);
+    $result = implode("\n", $lines);
     return "{$result}\n}\n";
 }
