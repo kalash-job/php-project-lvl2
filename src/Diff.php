@@ -11,7 +11,7 @@ function getDiff($before, $after): array
 {
     $firstColl = (array)$before;
     $secondColl = (array)$after;
-    $keys = array_keys(array_merge($firstColl, $secondColl));
+    $mergedKeys = array_keys(array_merge($firstColl, $secondColl));
     return array_map(function ($key) use ($firstColl, $secondColl) {
         if (!array_key_exists($key, $firstColl)) {
             return ['key' => $key, 'value' => $secondColl[$key], 'type' => 'added'];
@@ -21,15 +21,15 @@ function getDiff($before, $after): array
         $nodeFirst = $firstColl[$key];
         $nodeSecond = $secondColl[$key];
         if (is_object($nodeFirst) && is_object($nodeSecond)) {
-            $children = getDiff($nodeFirst, $nodeSecond);
-            return ['key' => $key, 'type' => 'parent', 'value' => $children];
+            $value = getDiff($nodeFirst, $nodeSecond);
+            return ['key' => $key, 'type' => 'parent', 'value' => $value];
         }
         if ($nodeFirst === $nodeSecond) {
             return  ['key' => $key, 'value' => $nodeFirst, 'type' => 'same'];
         } else {
             return ['key' => $key, 'newValue' => $nodeSecond, 'oldValue' => $nodeFirst, 'type' => 'changed'];
         }
-    }, $keys);
+    }, $mergedKeys);
 }
 
 function render($differences, string $format)
@@ -46,7 +46,7 @@ function render($differences, string $format)
 function genDiff(string $pathFirst, string $pathSecond, string $format)
 {
     if (!file_exists($pathFirst) || !file_exists($pathSecond)) {
-        throw new \Exception("File not found. You should write a correct path to the file\n");
+        throw new \Exception("File not found. You should write a correct path to the file");
     }
     $contentFirst = file_get_contents($pathFirst);
     $contentSecond = file_get_contents($pathSecond);
