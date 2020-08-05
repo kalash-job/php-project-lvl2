@@ -34,11 +34,11 @@ function iter($node, string $path): array
             return [];
         case 'parent':
             $newPath = "{$path}{$node['key']}.";
+            $children = $node['children'];
             break;
         default:
             throw new \Exception("Unknown node type '{$node['type']}'");
     }
-    $children = $node['value'];
     return array_reduce($children, function ($acc, $child) use ($newPath) {
         return array_merge($acc, iter($child, $newPath));
     }, []);

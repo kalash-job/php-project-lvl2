@@ -26,8 +26,8 @@ function getDiff($before, $after): array
         $nodeFirst = $firstColl[$key];
         $nodeSecond = $secondColl[$key];
         if (is_object($nodeFirst) && is_object($nodeSecond)) {
-            $value = getDiff($nodeFirst, $nodeSecond);
-            return ['key' => $key, 'type' => 'parent', 'value' => $value];
+            $children = getDiff($nodeFirst, $nodeSecond);
+            return ['key' => $key, 'type' => 'parent', 'children' => $children];
         }
         if ($nodeFirst === $nodeSecond) {
             return  ['key' => $key, 'value' => $nodeFirst, 'type' => 'same'];

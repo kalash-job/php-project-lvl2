@@ -42,6 +42,7 @@ function iter($node, int $depth): array
                 $value = stringify($node['value']);
                 return ["{$offset}{$prefix}{$node['key']}: {$value}"];
             }
+            $children = formatObject($node['value']);
             break;
         case 'added':
             $prefix = $prefixPlus;
@@ -49,6 +50,7 @@ function iter($node, int $depth): array
                 $value = stringify($node['value']);
                 return ["{$offset}{$prefix}{$node['key']}: {$value}"];
             }
+            $children = formatObject($node['value']);
             break;
         case 'removed':
             $prefix = $prefixMinus;
@@ -56,6 +58,7 @@ function iter($node, int $depth): array
                 $value = stringify($node['value']);
                 return ["{$offset}{$prefix}{$node['key']}: {$value}"];
             }
+            $children = formatObject($node['value']);
             break;
         case 'changed':
             $newValue = stringify($node['newValue']);
@@ -65,13 +68,13 @@ function iter($node, int $depth): array
             return array_merge($firstLine, $secondLine);
         case 'parent':
             $prefix = $prefixSpaces;
+            $children = $node['children'];
             break;
         default:
             throw new \Exception("Unknown node type '{$node['type']}'");
     }
 
     $firstLine = ["{$offset}{$prefix}{$node['key']}: {"];
-    $children = is_object($node['value']) ? formatObject($node['value']) : $node['value'];
     $newLines = array_reduce($children, function ($acc, $child) use ($depth) {
         return array_merge($acc, iter($child, $depth + 1));
     }, []);
