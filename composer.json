@@ -31,7 +31,8 @@
     },
     "require": {
         "docopt/docopt": "^1.0",
-        "symfony/yaml": "^5.1"
+        "symfony/yaml": "^5.1",
+        "lstrojny/functional-php": "^1.12"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "*",
