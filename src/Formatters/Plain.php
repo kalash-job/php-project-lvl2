@@ -37,13 +37,12 @@ function iter($node, string $path)
         case 'parent':
             $newPath = "{$path}{$node['key']}.";
             $children = $node['children'];
-            break;
+            return array_map(function ($child) use ($newPath) {
+                return iter($child, $newPath);
+            }, $children);
         default:
             throw new \Exception("Unknown node type '{$node['type']}'");
     }
-    return array_map(function ($child) use ($newPath) {
-        return iter($child, $newPath);
-    }, $children);
 }
 
 function renderPlainDiff(array $diff): string
