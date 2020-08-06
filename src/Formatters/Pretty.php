@@ -2,6 +2,8 @@
 
 namespace Differ\Pretty;
 
+use function Functional\flatten;
+
 function formatObject(object $node): array
 {
     $nodeAsColl = (array)$node;
@@ -29,7 +31,7 @@ function stringify($value)
     return $value;
 }
 
-function iter($node, int $depth): array
+function iter($node, int $depth)
 {
     $prefixMinus = '  - ';
     $prefixPlus = '  + ';
@@ -40,7 +42,7 @@ function iter($node, int $depth): array
             $prefix = $prefixSpaces;
             if (!is_object($node['value'])) {
                 $value = stringify($node['value']);
-                return ["{$offset}{$prefix}{$node['key']}: {$value}"];
+                return "{$offset}{$prefix}{$node['key']}: {$value}";
             }
             $children = formatObject($node['value']);
             break;
@@ -48,7 +50,7 @@ function iter($node, int $depth): array
             $prefix = $prefixPlus;
             if (!is_object($node['value'])) {
                 $value = stringify($node['value']);
-                return ["{$offset}{$prefix}{$node['key']}: {$value}"];
+                return "{$offset}{$prefix}{$node['key']}: {$value}";
             }
             $children = formatObject($node['value']);
             break;
@@ -56,16 +58,16 @@ function iter($node, int $depth): array
             $prefix = $prefixMinus;
             if (!is_object($node['value'])) {
                 $value = stringify($node['value']);
-                return ["{$offset}{$prefix}{$node['key']}: {$value}"];
+                return "{$offset}{$prefix}{$node['key']}: {$value}";
             }
             $children = formatObject($node['value']);
             break;
         case 'changed':
             $newValue = stringify($node['newValue']);
             $oldValue = stringify($node['oldValue']);
-            $firstLine = ["{$offset}{$prefixPlus}{$node['key']}: {$newValue}"];
-            $secondLine = ["{$offset}{$prefixMinus}{$node['key']}: {$oldValue}"];
-            return array_merge($firstLine, $secondLine);
+            $firstLine = "{$offset}{$prefixPlus}{$node['key']}: {$newValue}";
+            $secondLine = "{$offset}{$prefixMinus}{$node['key']}: {$oldValue}";
+            return "$firstLine\n$secondLine";
         case 'parent':
             $prefix = $prefixSpaces;
             $children = $node['children'];
@@ -73,11 +75,10 @@ function iter($node, int $depth): array
         default:
             throw new \Exception("Unknown node type '{$node['type']}'");
     }
-
     $firstLine = ["{$offset}{$prefix}{$node['key']}: {"];
-    $newLines = array_reduce($children, function ($acc, $child) use ($depth) {
-        return array_merge($acc, iter($child, $depth + 1));
-    }, []);
+    $newLines = array_map(function ($child) use ($depth) {
+        return iter($child, $depth + 1);
+    }, $children);
     return array_merge($firstLine, $newLines, ["{$offset}    }"]);
 }
 
@@ -85,9 +86,10 @@ function renderDiff(array $diff): string
 {
     $startDepth = 1;
     $startLine = ["{"];
-    $lines = array_reduce($diff, function ($acc, $node) use ($startDepth) {
-        return array_merge($acc, iter($node, $startDepth));
-    }, $startLine);
-    $result = implode("\n", $lines);
-    return "{$result}\n}\n";
+    $lastLine = ["}\n"];
+    $lines = array_map(function ($node) use ($startDepth) {
+        return iter($node, $startDepth);
+    }, $diff);
+    $linesFlattened = flatten($lines);
+    return implode("\n", array_merge($startLine, $linesFlattened, $lastLine));
 }
