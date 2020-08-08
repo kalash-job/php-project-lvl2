@@ -14,12 +14,12 @@ function formatObject(object $node): array
         } else {
             $value = $nodeAsColl[$key];
         }
-        $acc[] = ['key' => $key, 'value' => $value, 'type' => 'same'];
+        $acc[] = ['key' => $key, 'value' => $value];
         return $acc;
     }, []);
 }
 
-function stringify($value)
+function stringify($value, int $depth): string
 {
     if ($value === true) {
         return 'true';
@@ -28,7 +28,18 @@ function stringify($value)
     } elseif ($value === null) {
         return 'null';
     }
-    return $value;
+    if (!is_object($value)) {
+        return $value;
+    }
+    $newLines =  array_map(function ($item) use ($depth) {
+        $prefixSpaces = '    ';
+        $offset = str_repeat('    ', $depth);
+        $innerValue = stringify($item['value'], $depth + 1);
+        return "{$offset}{$prefixSpaces}{$item['key']}: {$innerValue}";
+    }, formatObject($value));
+    $unionLine = implode("\n", $newLines);
+    $lastOffset = str_repeat('    ', $depth - 1);
+    return "{\n{$unionLine}\n{$lastOffset}    }";
 }
 
 function iter($node, int $depth)
@@ -40,31 +51,19 @@ function iter($node, int $depth)
     switch ($node['type']) {
         case 'same':
             $prefix = $prefixSpaces;
-            if (!is_object($node['value'])) {
-                $value = stringify($node['value']);
-                return "{$offset}{$prefix}{$node['key']}: {$value}";
-            }
-            $children = formatObject($node['value']);
-            break;
+            $value = stringify($node['value'], $depth);
+            return "{$offset}{$prefix}{$node['key']}: {$value}";
         case 'added':
             $prefix = $prefixPlus;
-            if (!is_object($node['value'])) {
-                $value = stringify($node['value']);
-                return "{$offset}{$prefix}{$node['key']}: {$value}";
-            }
-            $children = formatObject($node['value']);
-            break;
+            $value = stringify($node['value'], $depth);
+            return "{$offset}{$prefix}{$node['key']}: {$value}";
         case 'removed':
             $prefix = $prefixMinus;
-            if (!is_object($node['value'])) {
-                $value = stringify($node['value']);
-                return "{$offset}{$prefix}{$node['key']}: {$value}";
-            }
-            $children = formatObject($node['value']);
-            break;
+            $value = stringify($node['value'], $depth);
+            return "{$offset}{$prefix}{$node['key']}: {$value}";
         case 'changed':
-            $newValue = stringify($node['newValue']);
-            $oldValue = stringify($node['oldValue']);
+            $newValue = stringify($node['newValue'], $depth);
+            $oldValue = stringify($node['oldValue'], $depth);
             $firstLine = "{$offset}{$prefixPlus}{$node['key']}: {$newValue}";
             $secondLine = "{$offset}{$prefixMinus}{$node['key']}: {$oldValue}";
             return "$firstLine\n$secondLine";
