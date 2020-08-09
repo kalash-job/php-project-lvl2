@@ -70,15 +70,14 @@ function iter($node, int $depth)
         case 'parent':
             $prefix = $prefixSpaces;
             $children = $node['children'];
-            break;
+            $firstLine = "{$offset}{$prefix}{$node['key']}: {";
+            $newLines = array_map(function ($child) use ($depth) {
+                return iter($child, $depth + 1);
+            }, $children);
+            return array_merge([$firstLine], $newLines, ["{$offset}    }"]);
         default:
             throw new \Exception("Unknown node type '{$node['type']}'");
     }
-    $firstLine = ["{$offset}{$prefix}{$node['key']}: {"];
-    $newLines = array_map(function ($child) use ($depth) {
-        return iter($child, $depth + 1);
-    }, $children);
-    return array_merge($firstLine, $newLines, ["{$offset}    }"]);
 }
 
 function renderDiff(array $diff): string
