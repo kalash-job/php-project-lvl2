@@ -48,7 +48,6 @@ function iter(array $tree, string $path): array
 function renderPlainDiff(array $diff): string
 {
     $lines = iter($diff, '');
-    $linesFlattened = flatten($lines);
-    $result = implode("\n", $linesFlattened);
-    return "{$result}\n";
+    $joinedLine = implode("\n", flatten($lines));
+    return "{$joinedLine}\n";
 }

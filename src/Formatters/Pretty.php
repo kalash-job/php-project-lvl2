@@ -85,9 +85,7 @@ function iter(array $tree, int $depth): array
 function renderDiff(array $diff): string
 {
     $startDepth = 1;
-    $startLine = "{";
-    $lastLine = "}\n";
     $lines = iter($diff, $startDepth);
     $joinedLine = implode("\n", flatten($lines));
-    return "{$startLine}\n{$joinedLine}\n{$lastLine}";
+    return "{\n{$joinedLine}\n}\n";
 }
